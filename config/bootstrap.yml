@@ -1,0 +1,12 @@
+server:
+  port: 8899
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fintech-app
+    username: root
+    password: atumar4031
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
