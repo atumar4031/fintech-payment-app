@@ -1,5 +1,4 @@
 package com.fintech.app.response;
-
 import lombok.*;
 
 @Getter
@@ -17,4 +16,5 @@ public class UserResponse {
     private String bvn;
     private String token;
     private boolean status;
+
 }

@@ -16,4 +16,5 @@ public class UserRequest {
     private String bvn;
     private String password;
     private String confirmPassword;
+
 }

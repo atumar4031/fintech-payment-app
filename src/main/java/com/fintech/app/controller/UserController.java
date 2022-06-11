@@ -1,5 +1,4 @@
 package com.fintech.app.controller;
-
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.UserResponse;

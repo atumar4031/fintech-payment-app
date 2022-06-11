@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Util {
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -40,7 +40,7 @@ public class Util {
                 .build();
     }
 
-    public  boolean validatePassword(String password, String cpassword){
-        return  password.equals(cpassword);
+    public boolean validatePassword(String password, String cpassword) {
+        return password.equals(cpassword);
     }
 }

@@ -20,5 +20,4 @@ public class WalletController {
     public BaseResponse<WalletResponse> createWallet(@RequestBody WalletRequest walletRequest){
         return walletService.createWallet(walletRequest);
     }
-
 }

@@ -17,17 +17,17 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "users")
-public class User{
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
-    @Size(min=3, message = "First name can not be less than 3")
+    @Size(min = 3, message = "First name can not be less than 3")
     private String firstName;
 
     @NotEmpty
-    @Size(min=3, message = "Last name can not be less than 3")
+    @Size(min = 3, message = "Last name can not be less than 3")
     private String lastName;
 
     @NotEmpty
