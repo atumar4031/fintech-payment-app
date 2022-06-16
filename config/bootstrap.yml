@@ -2,11 +2,15 @@ server:
   port: 9005
 spring:
   datasource:
-    driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fintech-app
-    username: root
-    password: atumar4031
+    url: jdbc:postgresql://localhost:5432/fintech_app_db
+    username: postgres
+    password:
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: true
+jwt:
+  secret.key: secretKey123
+
+
+

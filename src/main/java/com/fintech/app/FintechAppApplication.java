@@ -11,3 +11,8 @@ public class FintechAppApplication {
 	}
 
 }
+
+
+//#    url: jdbc:mysql://localhost:3306/fintech-app
+//		#    username: root
+//		#    password: atumar4031

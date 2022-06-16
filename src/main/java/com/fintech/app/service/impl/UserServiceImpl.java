@@ -10,13 +10,16 @@ import com.fintech.app.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -44,5 +47,10 @@ public class UserServiceImpl implements UserService {
         User user= userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         UserResponse userResponse = utility.userToResponse(user);
         return new BaseResponse<>(HttpStatus.OK, "user profile", userResponse);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return null;
     }
 }
