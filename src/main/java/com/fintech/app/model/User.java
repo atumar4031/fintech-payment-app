@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NotEmpty
@@ -42,7 +42,7 @@ public class User {
     @Size(min = 10, message = "BVN number must not be less than 10")
     private String bvn;
 
-    @Max(value = 4, message = "Pin can not be more than 4")
+    @Size(min = 4, message = "Pin can not be more than 4")
     private String pin;
 
     @NotEmpty
