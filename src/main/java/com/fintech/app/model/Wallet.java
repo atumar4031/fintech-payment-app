@@ -1,6 +1,5 @@
 package com.fintech.app.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,14 +23,14 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double balance;
+    private Double balance = 0.00;
+    private String bankName;
 
     @NotEmpty
     @Size(min = 10, message = "Account should have at least 10 number")
     private String accountNumber;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
     @CreationTimestamp

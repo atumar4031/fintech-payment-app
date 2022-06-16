@@ -1,9 +1,9 @@
 package com.fintech.app.service;
 
-import com.fintech.app.request.WalletRequest;
-import com.fintech.app.response.BaseResponse;
-import com.fintech.app.response.WalletResponse;
+import com.fintech.app.model.Wallet;
+import com.fintech.app.request.FlwWalletRequest;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 
 public interface WalletService {
-    BaseResponse<WalletResponse> createWallet(WalletRequest walletRequest);
+    Wallet createWallet(FlwWalletRequest walletRequest) throws JSONException;
 }
