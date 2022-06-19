@@ -18,7 +18,7 @@ jobs:
         env:
           POSTGRES_HOST: "localhost"
           POSTGRES_USER: "postgres"
-          POSTGRES_PASSWORD: "123456"
+          POSTGRES_PASSWORD: ""
           POSTGRES_DB: "fintech_app_db"
         # Set health checks to wait until postgres has started
         options: >-
