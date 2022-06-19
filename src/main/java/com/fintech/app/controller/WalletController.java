@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WalletController {
     private final WalletService walletService;
 
-    @PostMapping("/wallet")
-    public BaseResponse<WalletResponse> createWallet(@RequestBody WalletRequest walletRequest){
-        return walletService.createWallet(walletRequest);
-    }
+//    @PostMapping("/wallet")
+//    public BaseResponse<WalletResponse> createWallet(@RequestBody WalletRequest walletRequest){
+//        return walletService.createWallet(walletRequest);
+//    }
 }
