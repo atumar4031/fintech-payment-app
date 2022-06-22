@@ -1,9 +1,11 @@
 package com.fintech.app.controller;
 import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
+import com.fintech.app.model.Wallet;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.UserResponse;
+import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
 import com.fintech.app.util.Util;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,11 @@ public class UserController {
     @GetMapping("/register/{userid}")
     public BaseResponse<UserResponse> getUser(@PathVariable("userid") long userId){
         return userService.getUser(userId);
+    }
+
+    @GetMapping("/user/get-wallet")
+    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
+        return userService.fetchUserWallet(user);
     }
 
 

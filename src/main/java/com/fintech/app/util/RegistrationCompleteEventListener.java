@@ -3,7 +3,6 @@ package com.fintech.app.util;
 import com.fintech.app.model.User;
 import com.fintech.app.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,7 +13,6 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 @RequiredArgsConstructor
-@Slf4j
 @Component
 public class RegistrationCompleteEventListener implements ApplicationListener<RegistrationCompleteEvent> {
 
@@ -33,9 +31,6 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                     + "/verifyRegistration?token="
                     + token;
 
-        // sendVerificationEmail();
-        sendVerificationEmail(user, url);
-        log.info("click the link {} to verify your account: ", url);
     }
 
     private void sendVerificationEmail(User user, String url) {

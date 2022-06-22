@@ -42,7 +42,7 @@ public class User {
     private String phoneNumber;
 
     @NotEmpty
-    @Size(min = 10, message = "BVN number must not be less than 10")
+    @Size(min = 11, max = 11, message = "BVN number must not be less than 10")
     private String bvn;
 
     @Size(min = 4, message = "Pin can not be more than 4")

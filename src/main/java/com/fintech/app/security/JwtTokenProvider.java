@@ -14,8 +14,8 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret.key}")
-    private String jwtSecret;
+//    @Value("${jwt.secret.key}")
+    private final String jwtSecret = "secretKey123";
 
     public String generateToken(Authentication authentication){
         String username = authentication.getName();
