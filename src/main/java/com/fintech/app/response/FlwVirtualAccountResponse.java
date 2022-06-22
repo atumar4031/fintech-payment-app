@@ -1,5 +1,4 @@
 package com.fintech.app.response;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 public class FlwVirtualAccountResponse {
 
