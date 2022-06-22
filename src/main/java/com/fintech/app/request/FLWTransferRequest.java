@@ -10,15 +10,18 @@ import lombok.*;
 @Builder
 public class FLWTransferRequest {
         @JsonProperty("account_bank")
-        private String  accountBank;
+        private String  destinationBank;
 
         @JsonProperty("account_number")
-        private String  accountNumber;
-
-        private Integer amount;
+        private String  destinationAccountNumber;
+        private String sourceAccountNumber;
+        private String sourceBank;
+        private String amount;
         private String  narration;
         private String  currency;
         private String  reference;
+
+        private String pin;
 
         @JsonProperty("callback_url")
         private String  callbackUrl;
