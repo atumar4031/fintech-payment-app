@@ -9,6 +9,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +42,7 @@ public class User {
     private String phoneNumber;
 
     @NotEmpty
-    @Size(min = 10, message = "BVN number must not be less than 10")
+    @Size(min = 11, max = 11, message = "BVN number must not be less than 10")
     private String bvn;
 
     @Size(min = 4, message = "Pin can not be more than 4")
@@ -55,4 +58,8 @@ public class User {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime modifyAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>();
+
 }
