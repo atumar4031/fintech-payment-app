@@ -2,6 +2,7 @@ package com.fintech.app.controller;
 
 
 import com.fintech.app.request.FLWTransferRequest;
+import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
@@ -23,12 +24,12 @@ public class TransferController {
          return transactionService.getBanks(country);
     }
     @PostMapping("/banks")
-    public FlwAccountResponse resolveAccount(@RequestBody FlwAccountRequest flwAccountRequest){
+    public BaseResponse<FlwAccountResponse> resolveAccount(@RequestBody FlwAccountRequest flwAccountRequest){
         return transactionService.resolveAccount(flwAccountRequest);
     }
 
     @PostMapping("/transfer/{userId}")
-    public String processTransfer(@RequestBody FLWTransferRequest flwTransferRequest, @PathVariable long userId){
+    public BaseResponse<String> processTransfer(@RequestBody FLWTransferRequest flwTransferRequest, @PathVariable long userId){
         return transactionService.FlwInitiateTransfer(userId, flwTransferRequest);
     }
 

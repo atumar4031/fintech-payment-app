@@ -7,6 +7,7 @@ import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.FLWTransferRequest;
+import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
@@ -68,7 +69,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
     }
 
     @Override
-    public FlwAccountResponse resolveAccount(FlwAccountRequest flwAccountRequest) {
+    public BaseResponse<FlwAccountResponse> resolveAccount(FlwAccountRequest flwAccountRequest) {
 
 
         RestTemplate restTemplate = new RestTemplate();
@@ -84,33 +85,33 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
                 request,
                 FlwAccountResponse.class).getBody();
 
-        return response;
+        return new BaseResponse<>(HttpStatus.OK, "Account Resolved", response);
     }
 
 
 
     @Override
-    public String FlwInitiateTransfer(long userId, FLWTransferRequest transferRequest) {
-
-        // find user details
+    public BaseResponse<String> FlwInitiateTransfer(long userId, FLWTransferRequest transferRequest) {
+        // retrieve User details
         User user = retrieveUserDetails(userId);
         // validate pin
         if(!validatePin(transferRequest.getPin(), user))
-            return "invalid pin";
+            new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
 
         // validate amount
         if(!validateRequestBalance(transferRequest.getAmount()))
-            return "invalid amount";
+            new BaseResponse<>(HttpStatus.BAD_REQUEST, "amount error", "invalid amount");
 
         if(!validateWalletBalance(transferRequest.getAmount(), user))
-            return "insufficient balance";
+            new BaseResponse<>(HttpStatus.BAD_REQUEST, "balance error", "insufficient balance");
+
 
         // save transfer
         saveTransactions(user, transferRequest);
 
         //call API
         // TODO: API CALL
-        return "Transaction Success";
+        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", "Transfer success");
     }
 
     private void saveTransactions(User user, FLWTransferRequest transferRequest) {
@@ -125,7 +126,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
                 .clientRef(clientReference)
                 .flwRef(clientReference)
                 .narration(transferRequest.getNarration())
-                .status("PENDING")
+                .status(Constant.STATUS)
                 .destinationAccountNumber(transferRequest.getDestinationAccountNumber())
                 .destinationBank(transferRequest.getDestinationBank())
                 .createdAt(LocalDateTime.now())
@@ -160,12 +161,12 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
 
     @Override
-    public TransferResponse findTransfer(long id) {
+    public BaseResponse<TransferResponse> findTransfer(long id) {
         return null;
     }
 
     @Override
-    public List<TransferResponse> findAllTransfers() {
+    public BaseResponse<List<TransferResponse>> findAllTransfers() {
         return null;
     }
 }

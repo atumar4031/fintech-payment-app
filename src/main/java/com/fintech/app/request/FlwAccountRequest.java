@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 public class FlwAccountRequest {
 
      @JsonProperty("account_number")
-     private String account_number;
+     private String accountNumber;
 
      @JsonProperty("account_bank")
-     private String account_bank;
+     private String accountBank;
 
 }
