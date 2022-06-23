@@ -9,6 +9,6 @@ import com.fintech.app.request.FlwAccountRequest;
 import java.util.List;
 
 public interface FlwOtherBankTransferService {
-    List<FlwBank> getBanks(String currency);
+    List<FlwBank> getBanks();
     BaseResponse<FlwAccountResponse> resolveAccount(FlwAccountRequest flwAccountRequest);
 }

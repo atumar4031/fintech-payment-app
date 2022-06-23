@@ -6,7 +6,7 @@ import com.fintech.app.model.Wallet;
 import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
-import com.fintech.app.request.FLWTransferRequest;
+import com.fintech.app.request.TransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
@@ -50,7 +50,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
     }
 
     @Override
-    public List<FlwBank> getBanks(String country) {
+    public List<FlwBank> getBanks() {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -59,7 +59,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
         HttpEntity<FlwBankResponse> request = new  HttpEntity<>(null, headers);
 
         FlwBankResponse flwBankResponse = restTemplate.exchange(
-                Constant.GET_BANKS_API +"/"+ country,
+                Constant.GET_BANKS_API +"/NG",
                 HttpMethod.GET,
                 request,
                 FlwBankResponse.class).getBody();
@@ -91,9 +91,9 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
 
     @Override
-    public BaseResponse<String> FlwInitiateTransfer(long userId, FLWTransferRequest transferRequest) {
+    public BaseResponse<String> initiateOtherbankTransfer(TransferRequest transferRequest) {
         // retrieve User details
-        User user = retrieveUserDetails(userId);
+        User user = retrieveUserDetails(transferRequest.getUserId());
         // validate pin
         if(!validatePin(transferRequest.getPin(), user))
             new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
@@ -107,35 +107,35 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
 
         // save transfer
-        saveTransactions(user, transferRequest);
+        Transfer transfer = saveTransactions(user, transferRequest);
 
         //call API
         // TODO: API CALL
         return new BaseResponse<>(HttpStatus.OK, "Transfer completed", "Transfer success");
     }
 
-    private void saveTransactions(User user, FLWTransferRequest transferRequest) {
+    private Transfer saveTransactions(User user, TransferRequest transferRequest) {
         String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user).get();
-        int amount = Integer.parseInt(transferRequest.getAmount());
+        int amount = transferRequest.getAmount().intValue();
         double balance = wallet.getBalance() - amount;
         wallet.setBalance(balance);
 
         Transfer transfer = Transfer.builder()
-                .amount(Integer.parseInt(transferRequest.getAmount()))
+                .amount(transferRequest.getAmount().intValue())
                 .clientRef(clientReference)
                 .flwRef(clientReference)
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)
-                .destinationAccountNumber(transferRequest.getDestinationAccountNumber())
-                .destinationBank(transferRequest.getDestinationBank())
+                .destinationAccountNumber(transferRequest.getAccountNumber())
+                .destinationBank(transferRequest.getBankCode())
                 .createdAt(LocalDateTime.now())
                 .modifyAt(LocalDateTime.now())
                 .user(user)
                 .build();
 
         walletRepository.save(wallet);
-        transferRepository.save(transfer);
+        return transferRepository.save(transfer);
     }
 
 
@@ -150,13 +150,13 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
         return passwordEncoder.matches(pin, user.getPin());
     }
 
-    private boolean validateRequestBalance(String requestAmount) {
-       return Integer.parseInt(requestAmount) > 0;
+    private boolean validateRequestBalance(Double requestAmount) {
+       return requestAmount > 0;
     }
 
-    private boolean validateWalletBalance(String requestAmount,User user){
+    private boolean validateWalletBalance(Double requestAmount,User user){
         Wallet wallet = walletRepository.findWalletByUser(user).get();
-        return wallet.getBalance() >= Integer.parseInt(requestAmount);
+        return wallet.getBalance() >= requestAmount;
     }
 
 
