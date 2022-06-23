@@ -4,21 +4,25 @@ spring:
   devtools:
     add-properties: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/fintech_app
+    url: jdbc:postgresql://localhost:5432/fintech_app_db
     username: postgres
-    password: atumar4031
+    password:
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: false
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${SENDER_MAIL}
-    password: ${SENDER_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+    
+jwt:
+  secret.key: secretKey123
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ${SENDER_MAIL}
+  password: ${SENDER_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
