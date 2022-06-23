@@ -8,20 +8,22 @@ import com.fintech.app.repository.VerificationTokenRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.request.UserRequest;
-import com.fintech.app.request.WalletRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.UserResponse;
+import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
 import com.fintech.app.service.WalletService;
 import com.fintech.app.util.RegistrationCompleteEvent;
 import com.fintech.app.util.Util;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -85,6 +87,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return null;
+    }
+
     public void saveVerificationTokenForUser(String token, User user) {
         VerificationToken verificationToken = new VerificationToken(token, user);
         verificationTokenRepository.save(verificationToken);
@@ -114,4 +120,22 @@ public class UserServiceImpl implements UserService{
         verificationTokenRepository.save(verificationToken);
         return verificationToken;
     }
+
+    @Override
+    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
+        String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
+        user = userRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Wallet wallet = walletRepository.findWalletByUser(user);
+        WalletResponse response = WalletResponse.builder()
+                .walletId(wallet.getId())
+                .accountNumber(wallet.getAccountNumber())
+                .balance(wallet.getBalance())
+                .bankName(wallet.getBankName())
+                .createdAt(wallet.getCreatedAt())
+                .updatedAt(wallet.getModifyAt())
+                .build();
+        return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
+    }
+
 }

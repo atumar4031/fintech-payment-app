@@ -6,6 +6,8 @@ import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -18,8 +20,8 @@ import java.time.LocalDateTime;
 public class Util {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    JavaMailSender mailSender() {
+        return new JavaMailSenderImpl();
     }
 
     public User requestToUser(UserRequest userRequest) {
