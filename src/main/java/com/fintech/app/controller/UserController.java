@@ -8,20 +8,24 @@ import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
 import com.fintech.app.util.Util;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-@RequiredArgsConstructor
 @RestController
 @Slf4j
 public class UserController {
-    private final UserService userService;
-    private final Util utility;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private Util utility;
 
     @PostMapping("/register")
     public BaseResponse<UserResponse> createUserAccount(@Valid @RequestBody UserRequest userRequest,
