@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@Slf4j
+@RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserService userService;

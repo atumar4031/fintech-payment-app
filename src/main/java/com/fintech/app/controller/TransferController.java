@@ -6,6 +6,7 @@ import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
+import com.fintech.app.response.OtherBankTransferResponse;
 import com.fintech.app.service.impl.FlwOtherBankTransferImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,8 @@ public class TransferController {
     }
 
     @PostMapping("/otherBank")
-    public BaseResponse<String> processTransfer(@Valid @RequestBody TransferRequest transferRequest){
-        return transactionService.initiateOtherbankTransfer(transferRequest);
+    public BaseResponse<OtherBankTransferResponse> processTransfer(@Valid @RequestBody TransferRequest transferRequest){
+        return transactionService.initiateOtherBankTransfer(transferRequest);
     }
 
 }

@@ -16,6 +16,7 @@ public class TransferRequest {
     @NotNull(message = "User id is required")
     private Long userId;
     @NotNull(message = "account number is required")
+
     private String accountNumber;
     @NotNull(message = "account name is required")
     private String accountName;
@@ -23,6 +24,7 @@ public class TransferRequest {
     private String bankCode;
     @NotNull(message = "Amount is required")
     private Double amount;
+    private String status;
     @NotNull(message = "narration is required")
     private String narration;
     @NotNull(message = "Pin is required")

@@ -6,13 +6,14 @@ import com.fintech.app.model.Wallet;
 import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
+import com.fintech.app.request.OtherBankTransferRequest;
 import com.fintech.app.request.TransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.response.FlwBankResponse;
-import com.fintech.app.response.TransferResponse;
+import com.fintech.app.response.OtherBankTransferResponse;
 import com.fintech.app.service.FlwOtherBankTransferService;
 import com.fintech.app.service.TransferService;
 import com.fintech.app.util.Constant;
@@ -91,7 +92,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
 
     @Override
-    public BaseResponse<String> initiateOtherbankTransfer(TransferRequest transferRequest) {
+    public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
         // retrieve User details
         User user = retrieveUserDetails(transferRequest.getUserId());
         // validate pin
@@ -106,14 +107,39 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
             new BaseResponse<>(HttpStatus.BAD_REQUEST, "balance error", "insufficient balance");
 
 
+        //call API
+
         // save transfer
         Transfer transfer = saveTransactions(user, transferRequest);
+        OtherBankTransferResponse response = otherBankTransfer(transferRequest, transfer.getClientRef());
 
-        //call API
-        // TODO: API CALL
-        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", "Transfer success");
+
+        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
+    private OtherBankTransferResponse otherBankTransfer(TransferRequest transferRequest, String clientRef){
+        OtherBankTransferRequest otherBankTransferRequest = OtherBankTransferRequest.builder()
+                .accountBank(transferRequest.getBankCode())
+                .accountNumber(transferRequest.getAccountNumber())
+                .amount(transferRequest.getAmount())
+                .currency("NGN")
+                .narration(transferRequest.getNarration())
+                .reference(clientRef)
+                .debitCurrency("NGN")
+                .build();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Authorization", "Bearer "+ Constant.AUTHORIZATION);
 
+        HttpEntity<OtherBankTransferRequest> request = new  HttpEntity<>(otherBankTransferRequest, headers);
+
+        OtherBankTransferResponse response = restTemplate.exchange(
+                Constant.OTHER_BANK_TRANSFER_API,
+                HttpMethod.POST,
+                request,
+                OtherBankTransferResponse.class).getBody();
+        return response;
+    }
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
         String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user).get();
@@ -141,7 +167,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
     private User retrieveUserDetails(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return user;
     }
 
@@ -157,16 +183,5 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
     private boolean validateWalletBalance(Double requestAmount,User user){
         Wallet wallet = walletRepository.findWalletByUser(user).get();
         return wallet.getBalance() >= requestAmount;
-    }
-
-
-    @Override
-    public BaseResponse<TransferResponse> findTransfer(long id) {
-        return null;
-    }
-
-    @Override
-    public BaseResponse<List<TransferResponse>> findAllTransfers() {
-        return null;
     }
 }
