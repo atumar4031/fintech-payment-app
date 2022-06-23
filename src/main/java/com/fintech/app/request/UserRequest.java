@@ -12,6 +12,7 @@ public class UserRequest {
     private String lastName;
     private String email;
     private String phoneNumber;
+    private String pin;
     private String accountNumber;
     private String bvn;
     private String password;

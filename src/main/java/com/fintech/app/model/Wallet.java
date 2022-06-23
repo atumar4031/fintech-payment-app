@@ -24,6 +24,7 @@ public class Wallet {
     private Long id;
 
     private Double balance = 0.00;
+
     private String bankName;
 
     @NotEmpty

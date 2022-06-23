@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         User user = utility.requestToUser(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setPin(passwordEncoder.encode(userRequest.getPin()));
         User user1 = userRepository.save(user);
 
         // CREATE WALLET
