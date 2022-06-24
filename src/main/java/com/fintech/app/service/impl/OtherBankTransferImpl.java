@@ -14,13 +14,10 @@ import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.response.FlwBankResponse;
 import com.fintech.app.response.OtherBankTransferResponse;
-import com.fintech.app.service.FlwOtherBankTransferService;
 import com.fintech.app.service.TransferService;
 import com.fintech.app.util.Constant;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,8 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Slf4j
-public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTransferService {
+public class OtherBankTransferImpl implements TransferService {
 
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
@@ -40,10 +36,10 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public FlwOtherBankTransferImpl(UserRepository userRepository,
-                                    WalletRepository walletRepository,
-                                    TransferRepository transferRepository,
-                                    PasswordEncoder passwordEncoder) {
+    public OtherBankTransferImpl(UserRepository userRepository,
+                                 WalletRepository walletRepository,
+                                 TransferRepository transferRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.walletRepository = walletRepository;
         this.transferRepository = transferRepository;
@@ -90,33 +86,49 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
     }
 
 
-
     @Override
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
-        // retrieve User details
-        User user = retrieveUserDetails(transferRequest.getUserId());
-        // validate pin
-        if(!validatePin(transferRequest.getPin(), user))
-            new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
+        OtherBankTransferResponse response = new OtherBankTransferResponse();
+        try{
+           User user = retrieveUserDetails(transferRequest.getUserId());
+           if(!validatePin(transferRequest.getPin(), user))
+               new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
+           if(!validateRequestBalance(transferRequest.getAmount()))
+               new BaseResponse<>(HttpStatus.BAD_REQUEST, "amount error", "invalid amount");
+           if(!validateWalletBalance(transferRequest.getAmount(), user))
+               new BaseResponse<>(HttpStatus.BAD_REQUEST, "balance error", "insufficient balance");
+           // save transfer
+           Transfer transfer = saveTransactions(user, transferRequest);
+           //call API
+           response = otherBankTransfer(transferRequest, transfer.getClientRef());
 
-        // validate amount
-        if(!validateRequestBalance(transferRequest.getAmount()))
-            new BaseResponse<>(HttpStatus.BAD_REQUEST, "amount error", "invalid amount");
-
-        if(!validateWalletBalance(transferRequest.getAmount(), user))
-            new BaseResponse<>(HttpStatus.BAD_REQUEST, "balance error", "insufficient balance");
-
-
-        //call API
-
-        // save transfer
-        Transfer transfer = saveTransactions(user, transferRequest);
-        OtherBankTransferResponse response = otherBankTransfer(transferRequest, transfer.getClientRef());
-
-
-        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
+       }catch (RuntimeException runtimeException){
+           runtimeException.printStackTrace();
+       }
+         return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
+
+    private User retrieveUserDetails(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user;
+    }
+
+    private boolean validatePin(String pin, User user) {
+        return passwordEncoder.matches(pin, user.getPin());
+    }
+
+    private boolean validateRequestBalance(Double requestAmount) {
+        return requestAmount > 0;
+    }
+
+    private boolean validateWalletBalance(Double requestAmount,User user){
+        Wallet wallet = walletRepository.findWalletByUser(user).get();
+        return wallet.getBalance() >= requestAmount;
+    }
+
     private OtherBankTransferResponse otherBankTransfer(TransferRequest transferRequest, String clientRef){
+
         OtherBankTransferRequest otherBankTransferRequest = OtherBankTransferRequest.builder()
                 .accountBank(transferRequest.getBankCode())
                 .accountNumber(transferRequest.getAccountNumber())
@@ -126,6 +138,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
                 .reference(clientRef)
                 .debitCurrency("NGN")
                 .build();
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -140,6 +153,7 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
                 OtherBankTransferResponse.class).getBody();
         return response;
     }
+
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
         String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user).get();
@@ -162,26 +176,5 @@ public class FlwOtherBankTransferImpl implements TransferService, FlwOtherBankTr
 
         walletRepository.save(wallet);
         return transferRepository.save(transfer);
-    }
-
-
-    private User retrieveUserDetails(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return user;
-    }
-
-
-    private boolean validatePin(String pin, User user) {
-        return passwordEncoder.matches(pin, user.getPin());
-    }
-
-    private boolean validateRequestBalance(Double requestAmount) {
-       return requestAmount > 0;
-    }
-
-    private boolean validateWalletBalance(Double requestAmount,User user){
-        Wallet wallet = walletRepository.findWalletByUser(user).get();
-        return wallet.getBalance() >= requestAmount;
     }
 }

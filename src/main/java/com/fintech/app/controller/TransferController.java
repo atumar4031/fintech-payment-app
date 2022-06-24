@@ -7,7 +7,7 @@ import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.response.OtherBankTransferResponse;
-import com.fintech.app.service.impl.FlwOtherBankTransferImpl;
+import com.fintech.app.service.impl.OtherBankTransferImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class TransferController {
 
     @Autowired
-    private FlwOtherBankTransferImpl transactionService;
+    private OtherBankTransferImpl transactionService;
 
     @GetMapping("/banks")
     public List<FlwBank> getBanks(){
