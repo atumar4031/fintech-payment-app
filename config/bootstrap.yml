@@ -8,21 +8,17 @@ spring:
     username: postgres
     password: atumar4031
   jpa:
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create
     generate-ddl: true
     show-sql: false
-    
-jwt:
-  secret.key: secretKey123
-
-mail:
-  host: smtp.gmail.com
-  port: 587
-  username: ${SENDER_MAIL}
-  password: ${SENDER_PASSWORD}
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SENDER_MAIL}
+    password: ${SENDER_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
