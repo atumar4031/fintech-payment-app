@@ -13,13 +13,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@Slf4j
+@RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -34,17 +35,18 @@ public class UserController {
     }
 
     @GetMapping("/verifyRegistration")
-    public String validateRegistrationToken(@RequestParam("token") String token){
+    public BaseResponse validateRegistrationToken(@RequestParam("token") String token){
         boolean isValid = userService.validateRegistrationToken(token);
-        return isValid ? "User verified successfully" : "User verification failed";
+        return isValid ? new BaseResponse<>(HttpStatus.OK, "User verified successfully", null)
+                : new BaseResponse<>(HttpStatus.BAD_REQUEST, "User verification failed", null);
     }
 
     @GetMapping("/resendVerificationToken")
-    public String resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
+    public BaseResponse resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
         VerificationToken verificationToken = userService.generateNewToken(oldToken);
         User user = verificationToken.getUser();
         utility.resendVerificationTokenMail(user, utility.applicationUrl(request), verificationToken);
-        return "verification link send";
+        return new BaseResponse(HttpStatus.OK, "verification link send", null);
     }
 
     @GetMapping("/register/{userid}")

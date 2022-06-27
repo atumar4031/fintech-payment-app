@@ -1,7 +1,5 @@
-package com.fintech.app.model;
-
+package com.fintech.app.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 public class FlwVirtualAccountResponse {
 
     private String status;

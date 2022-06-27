@@ -4,9 +4,9 @@ spring:
   devtools:
     add-properties: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/fintech_app_db
+    url: jdbc:postgresql://localhost:5432/fintech_app
     username: postgres
-    password:
+    password: atumar4031
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true

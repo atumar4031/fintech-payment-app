@@ -16,8 +16,3 @@ public class FintechAppApplication {
 		return new RestTemplate();
 	}
 }
-
-
-//#    url: jdbc:mysql://localhost:3306/fintech-app
-//		#    username: root
-//		#    password: atumar4031
