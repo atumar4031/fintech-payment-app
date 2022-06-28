@@ -15,6 +15,7 @@ import com.fintech.app.security.JwtTokenProvider;
 import com.fintech.app.service.BlacklistService;
 import com.fintech.app.service.impl.LoginServiceImpl;
 import com.fintech.app.service.impl.UserServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,9 +27,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -102,24 +105,29 @@ class LoginServiceImplUnitTest {
 
     private User user;
 
-
+    @BeforeEach
+    void setUp() {
+//        when(authenticationManager.authenticate(any())).thenReturn();
+        when(jwtTokenProvider.generateToken(any())).thenReturn("ABC123");
+    }
 
     @Test
     void testLogin() throws Exception {
-        when(this.jwtTokenProvider.generateToken((Authentication) any())).thenReturn("ABC123");
-        doNothing().when(this.httpServletResponse).setHeader((String) any(), (String) any());
-        when(this.authenticationManager.authenticate((Authentication) any()))
-                .thenReturn(new TestingAuthenticationToken("Principal", "Credentials"));
+//        doNothing().when(httpServletResponse.setHeader(anyString(), anyString()));
 
         LoginRequest loginDto = new LoginRequest();
         loginDto.setEmail("stan@gmail.com");
         loginDto.setPassword("1234");
-        BaseResponse<JwtAuthResponse> actualLoginResult = this.loginServiceImpl.login(loginDto);
+        Authentication auth =  new UsernamePasswordAuthenticationToken(
+                loginDto.getEmail(),loginDto.getPassword());
+        when(authenticationManager.authenticate(auth)).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        BaseResponse<JwtAuthResponse> actualLoginResult = loginServiceImpl.login(loginDto);
         assertEquals(HttpStatus.OK, actualLoginResult.getStatus());
         assertEquals("ABC123", actualLoginResult.getResult().getAccessToken());
-        verify(this.jwtTokenProvider).generateToken((Authentication) any());
-        verify(this.httpServletResponse).setHeader((String) any(), (String) any());
-        verify(this.authenticationManager).authenticate((Authentication) any());
+        verify(jwtTokenProvider).generateToken(any());
+        verify(httpServletResponse).setHeader(anyString(), anyString());
+        verify(authenticationManager).authenticate(any());
     }
 
 
@@ -138,25 +146,6 @@ class LoginServiceImplUnitTest {
         assertEquals(actualLogoutResult.getStatus(), HttpStatus.OK);
         verify(this.httpServletRequest).getHeader((String) any());
         verify(this.blacklistService).blacklistToken((String) any());
-    }
-
-    @Test
-    public void testChangePassword() throws  Exception{
-        when(this.loginService.changePassword(any())).thenReturn(new BaseResponse<>(HttpStatus.OK, "Check Your Email to Reset Your Password", null));
-
-        PasswordRequest passwordDto = new PasswordRequest();
-        passwordDto.setConfirmPassword("stan");
-        passwordDto.setNewPassword("stan");
-        passwordDto.setOldPassword("1234");
-        String content = (new ObjectMapper()).writeValueAsString(passwordDto);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/api/v1/user/changePassword")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content);
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(LoginController.class)
-                .build()
-                .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
-
     }
 
     @Test

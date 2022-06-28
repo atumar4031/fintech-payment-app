@@ -89,5 +89,29 @@ public class LoginControllerUnitTest {
         Assertions.assertNull(result);
     }
 
+    @Test
+    public void testChangePassword() throws  Exception{
+        PasswordRequest passwordDto = PasswordRequest.builder()
+                .oldPassword("stan")
+                .newPassword("1234")
+                .confirmPassword("1234")
+                .build();
+
+        when(this.loginService.changePassword(passwordDto))
+                .thenReturn(new BaseResponse<>(HttpStatus.OK,
+                        "Password changed successfully",
+                        null));
+
+        String content = (new ObjectMapper()).writeValueAsString(passwordDto);
+        MockHttpServletRequestBuilder requestBuilder =
+                MockMvcRequestBuilders.put("/api/v1/user/changePassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.loginController)
+                .build()
+                .perform(requestBuilder);
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(405));
+
+    }
 
 }
