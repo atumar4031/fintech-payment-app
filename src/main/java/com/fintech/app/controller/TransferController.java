@@ -1,6 +1,10 @@
 package com.fintech.app.controller;
 
-
+import com.fintech.app.model.LocalTransfer;
+import com.fintech.app.request.LocalTransferRequest;
+import com.fintech.app.response.BaseResponse;
+import com.fintech.app.service.LocalTransferService;
+import lombok.RequiredArgsConstructor;
 import com.fintech.app.request.TransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
@@ -16,11 +20,22 @@ import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/transfers")
 public class TransferController {
 
     @Autowired
     private OtherBankTransferImpl transactionService;
+    
+    private final LocalTransferService localTransferService;
+    @PostMapping("/local")
+    public BaseResponse<LocalTransfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){
+        return localTransferService.makeLocalTransfer(localTransferRequest);
+    }
+    @GetMapping("/resolveLocalAccount/{accountNumber}")
+    public BaseResponse<String> resolveLocalAccount(@PathVariable String accountNumber){
+        return localTransferService.resolveLocalAccount(accountNumber);
+    }
 
     @GetMapping("/banks")
     public List<FlwBank> getBanks(){
