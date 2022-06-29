@@ -15,7 +15,7 @@ import javax.mail.MessagingException;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class LoginController {
 
