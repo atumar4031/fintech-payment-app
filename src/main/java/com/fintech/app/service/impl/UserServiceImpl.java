@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         wallet.setBalance(0.0);
         walletRepository.save(wallet);
 
-// CALL EMAIL SERVICE
+        // CALL EMAIL SERVICE
         publisher.publishEvent(new RegistrationCompleteEvent(
                 user1,
                 utility.applicationUrl(request)
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
         user = userRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Wallet wallet = walletRepository.findWalletByUser(user);
+        Wallet wallet = walletRepository.findWalletByUser(user).get();
         WalletResponse response = WalletResponse.builder()
                 .walletId(wallet.getId())
                 .accountNumber(wallet.getAccountNumber())

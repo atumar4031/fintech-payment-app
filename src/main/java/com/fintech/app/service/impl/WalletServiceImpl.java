@@ -2,13 +2,12 @@ package com.fintech.app.service.impl;
 
 import com.fintech.app.model.*;
 import com.fintech.app.request.FlwWalletRequest;
-import com.fintech.app.request.WalletRequest;
+import com.fintech.app.response.FlwVirtualAccountResponse;
 import com.fintech.app.service.WalletService;
 import com.fintech.app.util.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

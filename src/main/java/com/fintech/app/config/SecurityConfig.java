@@ -3,6 +3,7 @@ import com.fintech.app.security.CustomUserDetailsService;
 import com.fintech.app.security.JwtAuthenticationEntryPoint;
 import com.fintech.app.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,8 +25,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
@@ -40,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        super.configure(http);
         http
                 .csrf().disable()
                 .exceptionHandling()
@@ -50,18 +52,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/**")
+                .antMatchers("/api/v1/**", "/**")
                 .permitAll()
                 .and()
                 .httpBasic();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.headers().frameOptions().disable();
 
+
+//        http.cors();
+//        http
+//                .csrf()
+//                .disable()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(authenticationEntryPoint)
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/api/v1/transfers/otherBank", "/**")
+//                .permitAll();
+
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        super.configure(auth);
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 

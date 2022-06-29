@@ -150,14 +150,4 @@ class UserServiceTest{
                 .thenReturn(new VerificationToken("token", user));
         userService.saveVerificationTokenForUser("token", user);
     }
-
-    @Test
-    void should_validateRegistrationToken() {
-
-    }
-
-    @Test
-    void should_generateNewToken() {
-
-    }
 }
