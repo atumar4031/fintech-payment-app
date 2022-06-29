@@ -15,12 +15,14 @@ import com.fintech.app.security.JwtTokenProvider;
 import com.fintech.app.service.BlacklistService;
 import com.fintech.app.service.impl.LoginServiceImpl;
 import com.fintech.app.service.impl.UserServiceImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -55,36 +57,36 @@ import static org.mockito.Mockito.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(classes = {LoginServiceImpl.class})
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class LoginServiceImplUnitTest {
-    @MockBean
+    @Mock
     private AuthenticationManager authenticationManager;
 
-    @MockBean
+    @Mock
     private BlacklistService blacklistService;
 
-    @MockBean
+    @Mock
     private BlacklistedTokenRepository blackListedTokenRepository;
 
-    @MockBean
+    @Mock
     private HttpServletRequest httpServletRequest;
 
-    @MockBean
+    @Mock
     private BlacklistedToken blacklistToken;
 
-    @MockBean
+    @Mock
     private HttpServletResponse httpServletResponse;
 
-    @MockBean
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
 
-    @MockBean
+    @Mock
     PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @Mock
     UserRepository userRepository;
 
-    @MockBean
+    @InjectMocks
     private LoginServiceImpl loginServiceImpl;
 
     private  LoginService loginService;
@@ -109,6 +111,7 @@ class LoginServiceImplUnitTest {
     void setUp() {
 //        when(authenticationManager.authenticate(any())).thenReturn();
         when(jwtTokenProvider.generateToken(any())).thenReturn("ABC123");
+        user = User.builder().email("stan@gmail.com").password("1234").build();
     }
 
     @Test
@@ -120,14 +123,25 @@ class LoginServiceImplUnitTest {
         loginDto.setPassword("1234");
         Authentication auth =  new UsernamePasswordAuthenticationToken(
                 loginDto.getEmail(),loginDto.getPassword());
-        when(authenticationManager.authenticate(auth)).thenReturn(authentication);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+//        when(jwtTokenProvider.generateToken(any())).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
+
         BaseResponse<JwtAuthResponse> actualLoginResult = loginServiceImpl.login(loginDto);
-        assertEquals(HttpStatus.OK, actualLoginResult.getStatus());
+        Assertions.assertThat(HttpStatus.OK).isEqualTo(actualLoginResult.getStatus());
+        assertEquals("Login Successful", actualLoginResult.getMessage());
         assertEquals("ABC123", actualLoginResult.getResult().getAccessToken());
         verify(jwtTokenProvider).generateToken(any());
         verify(httpServletResponse).setHeader(anyString(), anyString());
         verify(authenticationManager).authenticate(any());
+
+//        Authentication auth =  new UsernamePasswordAuthenticationToken(
+//                loginRequest.getEmail(),loginRequest.getPassword());
+
+//        authentication = authenticationManager.authenticate(auth);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        token = jwtTokenProvider.generateToken(authentication);
+//        httpServletResponse.setHeader("Authorization", token);
     }
 
 
@@ -167,13 +181,13 @@ class LoginServiceImplUnitTest {
 
     @Test
     void resetPassword(){
-        PasswordRequest resetPasswordDto = new PasswordRequest("stanleynkannebe@gmail.com", "1234","stan", "stan");
+        PasswordRequest resetPasswordDto = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
         Mockito.when(jwtTokenProvider.getUsernameFromJwt(any())).thenReturn(user.getEmail());
         Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
         String newPassword = "iou23iu23ioy3o73873ii";
         Mockito.when(passwordEncoder.encode(any())).thenReturn(newPassword);
         Mockito.when(userRepository.save(any())).thenReturn(user);
-        BaseResponse<String> resetPassword = loginService.resetPassword(resetPasswordDto, "hsdjksuiwue");
+        BaseResponse<String> resetPassword = loginServiceImpl.resetPassword(resetPasswordDto, "hsdjksuiwue");
         org.assertj.core.api.Assertions.assertThat(resetPassword.getMessage()).isEqualTo("Password Reset Successfully");
     }
 

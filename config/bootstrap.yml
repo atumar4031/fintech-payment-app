@@ -4,11 +4,11 @@ spring:
   devtools:
     add-properties: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/fintech_app_db
-    username: postgres
-    password:
+    url: jdbc:postgresql://ec2-44-206-11-200.compute-1.amazonaws.com:5432/dcbr4c3md0ho0p
+    username: vkbxbgblziemrm
+    password: 54902f895b86818a9f78ff9fae464f66b9b8e236d2fa15e6b24d5a126291a53b
   jpa:
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create-drop
     generate-ddl: true
     show-sql: false
     
