@@ -83,9 +83,9 @@ public class LoginControllerUnitTest {
 
     @Test
     public void testLogout() throws Exception {
-        when(loginService.logout(any())).thenReturn(null);
+        when(loginService.logout()).thenReturn(null);
 
-        BaseResponse<?> result = loginService.logout(null);
+        BaseResponse<?> result = loginService.logout();
         Assertions.assertNull(result);
     }
 
@@ -104,14 +104,13 @@ public class LoginControllerUnitTest {
 
         String content = (new ObjectMapper()).writeValueAsString(passwordDto);
         MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.put("/api/v1/user/changePassword")
+                MockMvcRequestBuilders.post("/api/v1/user/changePassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(this.loginController)
                 .build()
                 .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(405));
-
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
     }
 
 }

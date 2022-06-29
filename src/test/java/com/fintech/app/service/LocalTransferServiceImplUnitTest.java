@@ -34,13 +34,13 @@ import static org.mockito.Mockito.*;
 @RequiredArgsConstructor
 class LocalTransferServiceImplUnitTest {
     @Mock
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    private  WalletRepository walletRepository;
+    private WalletRepository walletRepository;
     @Mock
-    private  LocalTransferRepository localTransferRepository;
+    private LocalTransferRepository localTransferRepository;
     @Mock
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     private User user1;
     private User user2;
     private Wallet wallet1;
@@ -66,33 +66,89 @@ class LocalTransferServiceImplUnitTest {
                 .status("SUCCESSFUL")
                 .transferDate(LocalDateTime.now())
                 .build();
+    }
 
+    @Test
+    void testSuccessfulLocalTransfer() {
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
         Mockito.when(authentication.getName()).thenReturn(user1.getEmail());
         Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user1));
-        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
         Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
         Mockito.when(walletRepository.findWalletByUser(user2)).thenReturn(wallet2);
         Mockito.when(passwordEncoder.matches(any(), any())).thenReturn(true);
         Mockito.when(localTransferRepository.save(any())).thenReturn(localTransfer);
         when(walletRepository.save(any())).thenReturn(null);
-    }
-
-    @Test
-    void makeLocalTransfer() {
         var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
                 "1234", 2000.0, wallet2.getAccountNumber(), "Stan Sender"
         ));
         Assertions.assertThat(response.getMessage()).isEqualTo("Transfer to " + user2.getFirstName() + " " + user2.getLastName() + " successful");
         Assertions.assertThat(wallet2.getBalance()).isEqualTo(4000.0);
         Assertions.assertThat(wallet1.getBalance()).isEqualTo(8000.0);
-
     }
 
     @Test
-    void resolveLocalAccount() {
+    void testNegativeTransferAmount() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
+        Mockito.when(authentication.getName()).thenReturn(user1.getEmail());
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user1));
+        Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
+        var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
+                "1234", -2000.0, wallet2.getAccountNumber(), "Stan Sender"
+        ));
+        Assertions.assertThat(response.getMessage()).isEqualTo("Invalid transfer amount");
+    }
+
+    @Test
+    void testForInsufficientFunds() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
+        Mockito.when(authentication.getName()).thenReturn(user1.getEmail());
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user1));
+        Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
+        var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
+                "1234", 20000.0, wallet2.getAccountNumber(), "Stan Sender"
+        ));
+        Assertions.assertThat(response.getMessage()).isEqualTo("Insufficient funds");
+    }
+
+    @Test
+    void testForIncorrectTransferPin() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
+        Mockito.when(authentication.getName()).thenReturn(user1.getEmail());
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user1));
+        Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
+        var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
+                "3335", 2000.0, wallet2.getAccountNumber(), "Stan Sender"
+        ));
+        Assertions.assertThat(response.getMessage()).isEqualTo("Incorrect transfer pin");
+    }
+
+    @Test
+    void testResolveLocalAccountReturnsValidUserFullName() {
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
+        var response = localTransferService.resolveLocalAccount("1234564890");
+        Assertions.assertThat(response.getResult()).isEqualTo("Stan Recipient");
+    }
+
+    @Test
+    void testResolveLocalAccountReturnsNotFound() {
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(null);
+        var response = localTransferService.resolveLocalAccount("1234564890");
+        Assertions.assertThat(response.getMessage()).isEqualTo("Account not found");
     }
 }

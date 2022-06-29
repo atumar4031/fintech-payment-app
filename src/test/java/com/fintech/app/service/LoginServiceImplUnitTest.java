@@ -53,6 +53,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -89,15 +90,10 @@ class LoginServiceImplUnitTest {
     @InjectMocks
     private LoginServiceImpl loginServiceImpl;
 
-    private  LoginService loginService;
-
     Authentication authentication = Mockito.mock(Authentication.class);
 
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 
-//    @Mock
-//    private JwtTokenProvider jwtTokenProvider;
-//    @Mock
     private CustomUserDetailsService userDetailsService;
 
 
@@ -109,14 +105,12 @@ class LoginServiceImplUnitTest {
 
     @BeforeEach
     void setUp() {
-//        when(authenticationManager.authenticate(any())).thenReturn();
-        when(jwtTokenProvider.generateToken(any())).thenReturn("ABC123");
         user = User.builder().email("stan@gmail.com").password("1234").build();
     }
 
     @Test
     void testLogin() throws Exception {
-//        doNothing().when(httpServletResponse.setHeader(anyString(), anyString()));
+        when(jwtTokenProvider.generateToken(any())).thenReturn("ABC123");
 
         LoginRequest loginDto = new LoginRequest();
         loginDto.setEmail("stan@gmail.com");
@@ -124,7 +118,6 @@ class LoginServiceImplUnitTest {
         Authentication auth =  new UsernamePasswordAuthenticationToken(
                 loginDto.getEmail(),loginDto.getPassword());
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-//        when(jwtTokenProvider.generateToken(any())).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
         BaseResponse<JwtAuthResponse> actualLoginResult = loginServiceImpl.login(loginDto);
@@ -135,60 +128,64 @@ class LoginServiceImplUnitTest {
         verify(httpServletResponse).setHeader(anyString(), anyString());
         verify(authenticationManager).authenticate(any());
 
-//        Authentication auth =  new UsernamePasswordAuthenticationToken(
-//                loginRequest.getEmail(),loginRequest.getPassword());
-
-//        authentication = authenticationManager.authenticate(auth);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        token = jwtTokenProvider.generateToken(authentication);
-//        httpServletResponse.setHeader("Authorization", token);
     }
 
 
     @Test
     void testLogout() {
-        when(this.httpServletRequest.getHeader((String) any())).thenReturn("https://decagon.com");
-
-        BlacklistedToken blackListedToken = new BlacklistedToken();
-        String token = "abhfkjc";
-        blackListedToken.setId(123L);
-        blackListedToken.setToken("ABC123");
-        when(this.blacklistService.blacklistToken((String) any())).thenReturn(blackListedToken);
-        BaseResponse<?> actualLogoutResult = this.loginServiceImpl.logout("ABC123");
-        assertEquals("Logout Successful", actualLogoutResult.getMessage());
-        assertEquals(HttpStatus.OK, actualLogoutResult.getStatus());
-        assertEquals(actualLogoutResult.getStatus(), HttpStatus.OK);
-        verify(this.httpServletRequest).getHeader((String) any());
-        verify(this.blacklistService).blacklistToken((String) any());
-    }
-
-    @Test
-    void generateToken() throws MessagingException {
-        PasswordRequest passwordRequest = PasswordRequest.builder()
-                .email(user.getEmail())
-                .build();
-        Mockito.when(userRepository.findUserByEmail(any())).thenReturn(user);
-        Mockito.when(userDetailsService.loadUserByUsername(any())).thenReturn(new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority("ROLE_PREMIUM"))));
-        String token = "iuhiuhdhsjhkhaieooijowjeosdjkjskj";
-        Mockito.when(jwtTokenProvider.generateToken(any())).thenReturn(token);
-//        Mockito.when(emailService.send(any())).thenReturn(ResponseEntity.ok("Message sent successfully"));
-        BaseResponse<String> result = loginService.generateResetToken(passwordRequest);
-        org.assertj.core.api.Assertions.assertThat(result.getMessage()).isEqualTo("Check Your Email to Reset Your Password");
-
-
+        when(this.httpServletRequest.getHeader((String) any())).thenReturn("Bearer jnskjnkednkjdnkljvnkdjnvkjdnskfjvklsd");
+        var actualResponse = loginServiceImpl.logout();
+        Assertions.assertThat(actualResponse.getMessage()).isEqualTo("Logout Successful");
+        Assertions.assertThat(actualResponse.getStatus()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     void resetPassword(){
         PasswordRequest resetPasswordDto = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
         Mockito.when(jwtTokenProvider.getUsernameFromJwt(any())).thenReturn(user.getEmail());
-        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findUserByEmail(any())).thenReturn(user);
         String newPassword = "iou23iu23ioy3o73873ii";
         Mockito.when(passwordEncoder.encode(any())).thenReturn(newPassword);
         Mockito.when(userRepository.save(any())).thenReturn(user);
         BaseResponse<String> resetPassword = loginServiceImpl.resetPassword(resetPasswordDto, "hsdjksuiwue");
-        org.assertj.core.api.Assertions.assertThat(resetPassword.getMessage()).isEqualTo("Password Reset Successfully");
+        Assertions.assertThat(resetPassword.getMessage()).isEqualTo("Password Reset Successfully");
+        Assertions.assertThat(resetPassword.getStatus()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void testChangePasswordSuccessful(){
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        user = User.builder()
+                .firstName("Stanley")
+                .lastName("Gabriel")
+                .email("stan@gmail.com")
+                .password("1234")
+                .build();
+        when(userRepository.findUserByEmail(any())).thenReturn(user);
+        PasswordRequest passwordRequest = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
+
+        Assertions.assertThat(loginServiceImpl.changePassword(passwordRequest)
+                .getStatus()).isEqualTo(HttpStatus.OK);
+
+
+        /* if(!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())){
+            throw new RuntimeException("new password must be the same with confirm password");
+        }
+
+        String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        boolean matchPasswordWithOldPassword = passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword());
+
+        if(!matchPasswordWithOldPassword){
+            throw new RuntimeException("old password is not correct");
+        }
+        user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+
+        userRepository.save(user);
+        return new BaseResponse<>(HttpStatus.OK, "password changed successfully", null);*/
     }
 
 

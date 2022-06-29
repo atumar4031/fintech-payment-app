@@ -10,7 +10,7 @@ import javax.mail.MessagingException;
 
 public interface LoginService {
     BaseResponse<JwtAuthResponse> login(LoginRequest loginRequest) throws Exception;
-    BaseResponse<?> logout(String token);
+    BaseResponse<?> logout();
 
     BaseResponse<String> changePassword(PasswordRequest passwordRequest);
 

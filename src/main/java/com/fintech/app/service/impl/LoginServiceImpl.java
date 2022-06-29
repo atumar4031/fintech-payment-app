@@ -71,9 +71,9 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public BaseResponse<?> logout(String token) {
+    public BaseResponse<?> logout() {
 
-        token = httpServletRequest.getHeader("Authorization");
+        String token = httpServletRequest.getHeader("Authorization");
 
         blacklistService.blacklistToken(token);
 

@@ -28,8 +28,8 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public BaseResponse<?> logout(String token) {
-        return loginService.logout(token);
+    public BaseResponse<?> logout() {
+        return loginService.logout();
     }
 
 
