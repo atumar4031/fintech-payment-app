@@ -156,36 +156,43 @@ class LoginServiceImplUnitTest {
     void testChangePasswordSuccessful(){
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        user = User.builder()
-                .firstName("Stanley")
-                .lastName("Gabriel")
-                .email("stan@gmail.com")
-                .password("1234")
-                .build();
-        when(userRepository.findUserByEmail(any())).thenReturn(user);
+        when(authentication.getName()).thenReturn(user.getEmail());
+        when(userRepository.findUserByEmail(user.getEmail())).thenReturn(user);
         PasswordRequest passwordRequest = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
 
+        when(passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword())).thenReturn(true);
         Assertions.assertThat(loginServiceImpl.changePassword(passwordRequest)
                 .getStatus()).isEqualTo(HttpStatus.OK);
+    }
 
+    @Test
+    void testForIncorrectOldPassword() {
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn(user.getEmail());
+        when(userRepository.findUserByEmail(user.getEmail())).thenReturn(user);
+        PasswordRequest passwordRequest = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
+        when(passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword())).thenReturn(false);
+        Assertions.assertThat(loginServiceImpl.changePassword(passwordRequest).getStatus())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 
-        /* if(!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())){
-            throw new RuntimeException("new password must be the same with confirm password");
-        }
+    @Test
+    void testForNewPasswordAndConfirmPasswordMismatch() {
+        PasswordRequest passwordRequest = new PasswordRequest("stan@gmail.com", "1234","stan", "stann");
+        Assertions.assertThat(loginServiceImpl.changePassword(passwordRequest).getStatus())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 
-        String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        boolean matchPasswordWithOldPassword = passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword());
-
-        if(!matchPasswordWithOldPassword){
-            throw new RuntimeException("old password is not correct");
-        }
-        user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
-
-        userRepository.save(user);
-        return new BaseResponse<>(HttpStatus.OK, "password changed successfully", null);*/
+    @Test
+    void testForUserNotLoggedIn() {
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn(user.getEmail());
+        when(userRepository.findUserByEmail(user.getEmail())).thenReturn(null);
+        PasswordRequest passwordRequest = new PasswordRequest("stan@gmail.com", "1234","stan", "stan");
+        Assertions.assertThat(loginServiceImpl.changePassword(passwordRequest).getStatus())
+                .isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
 

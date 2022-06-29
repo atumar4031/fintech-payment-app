@@ -85,18 +85,23 @@ public class LoginServiceImpl implements LoginService {
     public BaseResponse<String> changePassword(PasswordRequest passwordRequest) {
 
         if(!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())){
-            throw new RuntimeException("new password must be the same with confirm password");
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "new password must be the same with confirm password", null);
         }
 
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(loggedInUsername);
-        User user = userRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User user = userRepository.findUserByEmail(loggedInUsername);
+
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged In", null);
+        }
+//        User user = userRepository.findByEmail(loggedInUsername)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         boolean matchPasswordWithOldPassword = passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword());
 
         if(!matchPasswordWithOldPassword){
-            throw new RuntimeException("old password is not correct");
+           return new BaseResponse<>(HttpStatus.BAD_REQUEST, "old password is not correct", null);
         }
         user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
 
