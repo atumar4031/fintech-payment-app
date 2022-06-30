@@ -7,6 +7,7 @@ import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
 import com.fintech.app.util.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;

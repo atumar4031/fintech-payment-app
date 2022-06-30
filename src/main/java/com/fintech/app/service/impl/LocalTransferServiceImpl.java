@@ -36,7 +36,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
         User recipient = getUserByAccountNumber(transferRequest.getAccountNumber());
 
-        Wallet userWallet = walletRepository.findWalletByUser(user).get();
+        Wallet userWallet = walletRepository.findWalletByUser(user);
 
         Double transferAmount = transferRequest.getAmount();
         Double userWalletBalance = userWallet.getBalance();
@@ -65,7 +65,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
         localTransferRepository.save(newTransfer);
 
-        Wallet recipientWallet = walletRepository.findWalletByUser(recipient).get();
+        Wallet recipientWallet = walletRepository.findWalletByUser(recipient);
         double recipientWalletBalance = recipientWallet.getBalance();
 
         userWallet.setBalance(userWalletBalance - transferAmount);
