@@ -5,8 +5,14 @@ import com.fintech.app.request.PasswordRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.JwtAuthResponse;
 import com.fintech.app.service.LoginService;
+import com.fintech.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,13 +29,23 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public BaseResponse<?> logout(String token) {
-        return loginService.logout(token);
+    public BaseResponse<?> logout() {
+        return loginService.logout();
     }
 
 
     @PostMapping("user/changePassword")
     public BaseResponse<String> changePassword(@RequestBody PasswordRequest passwordRequest) {
         return loginService.changePassword(passwordRequest);
+    }
+
+    @PostMapping("/forgot-password")
+    public BaseResponse<String> forgotPassword(@RequestBody PasswordRequest passwordRequest) throws MessagingException {
+        return loginService.generateResetToken(passwordRequest);
+    }
+
+    @PostMapping("/reset-password")
+    public BaseResponse<String> resetPassword(@RequestBody PasswordRequest passwordRequest, @RequestParam("token") String token) {
+        return loginService.resetPassword(passwordRequest, token);
     }
 }
