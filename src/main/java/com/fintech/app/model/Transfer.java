@@ -20,7 +20,7 @@ public class Transfer {
     private Long id;
     private String destinationAccountNumber;
     private String destinationBank;
-    private Integer amount;
+    private Double amount;
     private String narration;
     private String status;
     private String clientRef;
