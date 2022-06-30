@@ -5,11 +5,13 @@ import com.fintech.app.model.VerificationToken;
 import com.fintech.app.model.Wallet;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
+import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public interface UserService {
     BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException;
@@ -18,5 +20,6 @@ public interface UserService {
     Boolean validateRegistrationToken(String token);
     VerificationToken generateNewToken(String oldToken);
     BaseResponse<WalletResponse> fetchUserWallet(User user);
+    BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory(User user);
 
 }

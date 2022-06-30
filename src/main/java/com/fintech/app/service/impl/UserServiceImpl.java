@@ -1,5 +1,6 @@
 package com.fintech.app.service.impl;
 
+import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
 import com.fintech.app.model.Wallet;
@@ -9,6 +10,7 @@ import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
+import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
@@ -28,7 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -127,7 +131,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
         user = userRepository.findByEmail(loggedInUsername)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Wallet wallet = walletRepository.findWalletByUser(user).get();
+        Wallet wallet = walletRepository.findWalletByUser(user);
         WalletResponse response = WalletResponse.builder()
                 .walletId(wallet.getId())
                 .accountNumber(wallet.getAccountNumber())
@@ -137,6 +141,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .updatedAt(wallet.getModifyAt())
                 .build();
         return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
+    }
+
+    @Override
+    public BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory(User user) {
+        String loggedInEmail =  SecurityContextHolder.getContext().getAuthentication().getName();
+        user = userRepository.findUserByEmail(loggedInEmail);
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
+        }
+        List<TransactionHistoryResponse> history = new ArrayList<>();
+
+//        List<Transfer>
+
+
+        return null;
     }
 
 }

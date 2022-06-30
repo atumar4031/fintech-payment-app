@@ -123,7 +123,7 @@ public class OtherBankTransferImpl implements TransferService {
     }
 
     private boolean validateWalletBalance(Double requestAmount,User user){
-        Wallet wallet = walletRepository.findWalletByUser(user).get();
+        Wallet wallet = walletRepository.findWalletByUser(user);
         return wallet.getBalance() >= requestAmount;
     }
 
@@ -156,7 +156,7 @@ public class OtherBankTransferImpl implements TransferService {
 
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
         String clientReference = UUID.randomUUID().toString();
-        Wallet wallet = walletRepository.findWalletByUser(user).get();
+        Wallet wallet = walletRepository.findWalletByUser(user);
         int amount = transferRequest.getAmount().intValue();
         double balance = wallet.getBalance() - amount;
         wallet.setBalance(balance);
