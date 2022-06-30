@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping
-@CrossOrigin("*")
 public class WalletController {
     private final WalletService walletService;
 

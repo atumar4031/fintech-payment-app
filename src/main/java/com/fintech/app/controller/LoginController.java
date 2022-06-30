@@ -17,7 +17,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class LoginController {
 
     private final LoginService loginService;
