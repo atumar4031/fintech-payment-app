@@ -22,6 +22,7 @@ import javax.validation.Valid;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
+@CrossOrigin("*")
 public class UserController {
     @Autowired
     private UserService userService;
