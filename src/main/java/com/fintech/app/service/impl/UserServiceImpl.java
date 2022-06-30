@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user == null) {
             return new BaseResponse<>(HttpStatus.NOT_FOUND, "User not found", null);
         }
-        Wallet wallet = walletRepository.findWalletByUser(user);
+        Wallet wallet = walletRepository.findWalletByUser(user).get();
         WalletResponse response = WalletResponse.builder()
                 .walletId(wallet.getId())
                 .accountNumber(wallet.getAccountNumber())
