@@ -11,6 +11,7 @@ public class FintechAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FintechAppApplication.class, args);
 	}
+
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();

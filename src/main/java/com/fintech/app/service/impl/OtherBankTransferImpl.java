@@ -162,7 +162,7 @@ public class OtherBankTransferImpl implements TransferService {
         wallet.setBalance(balance);
 
         Transfer transfer = Transfer.builder()
-                .amount(transferRequest.getAmount().intValue())
+                .amount(transferRequest.getAmount())
                 .clientRef(clientReference)
                 .flwRef(clientReference)
                 .narration(transferRequest.getNarration())

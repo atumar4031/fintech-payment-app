@@ -19,11 +19,6 @@ import java.time.LocalDateTime;
 @Slf4j
 public class Util {
 
-    @Bean
-    JavaMailSender mailSender() {
-        return new JavaMailSenderImpl();
-    }
-
     public User requestToUser(UserRequest userRequest) {
         return User.builder()
                 .firstName(userRequest.getFirstName())
