@@ -1,15 +1,14 @@
 package com.fintech.app.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PasswordRequest {
+    private String email;
     private String oldPassword;
     private String newPassword;
     private String confirmPassword;
