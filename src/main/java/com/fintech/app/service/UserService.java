@@ -20,6 +20,6 @@ public interface UserService {
     Boolean validateRegistrationToken(String token);
     VerificationToken generateNewToken(String oldToken);
     BaseResponse<WalletResponse> fetchUserWallet(User user);
-    BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory(User user);
+    BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory();
 
 }

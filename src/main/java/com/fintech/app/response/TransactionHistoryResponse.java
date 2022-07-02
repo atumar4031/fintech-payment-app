@@ -2,6 +2,7 @@ package com.fintech.app.response;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -10,10 +11,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class TransactionHistoryResponse {
+    private Long id;
     private String name;
     private String bank;
-    private LocalDateTime dateTime;
+    private String transactionTime;
     private String type;
-    private double amount;
+    private String amount;
 
 }

@@ -22,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -156,22 +158,26 @@ public class OtherBankTransferImpl implements TransferService {
 
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
         String clientReference = UUID.randomUUID().toString();
+        String senderFullName = user.getFirstName() + " " + user.getLastName();
         Wallet wallet = walletRepository.findWalletByUser(user);
         int amount = transferRequest.getAmount().intValue();
         double balance = wallet.getBalance() - amount;
         wallet.setBalance(balance);
 
         Transfer transfer = Transfer.builder()
-                .amount(transferRequest.getAmount().intValue())
+                .amount(transferRequest.getAmount())
                 .clientRef(clientReference)
                 .flwRef(clientReference)
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)
                 .destinationAccountNumber(transferRequest.getAccountNumber())
                 .destinationBank(transferRequest.getBankCode())
-                .createdAt(LocalDateTime.now())
-                .modifyAt(LocalDateTime.now())
-                .user(user)
+                .destinationFullName(transferRequest.getAccountName())
+                .createdAt(Calendar.getInstance().getTime())
+                .senderAccountNumber(wallet.getAccountNumber())
+                .senderBankName(wallet.getBankName())
+                .senderFullName(senderFullName)
+                .type("OTHER")
                 .build();
 
         walletRepository.save(wallet);

@@ -1,18 +1,14 @@
 package com.fintech.app.service.impl;
 
-import com.fintech.app.model.Transfer;
-import com.fintech.app.model.User;
-import com.fintech.app.model.VerificationToken;
-import com.fintech.app.model.Wallet;
-import com.fintech.app.repository.UserRepository;
-import com.fintech.app.repository.VerificationTokenRepository;
-import com.fintech.app.repository.WalletRepository;
+import com.fintech.app.model.*;
+import com.fintech.app.repository.*;
 import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
+import com.fintech.app.service.LocalTransferService;
 import com.fintech.app.service.UserService;
 import com.fintech.app.service.WalletService;
 import com.fintech.app.util.RegistrationCompleteEvent;
@@ -30,10 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +43,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final WalletService walletService;
     private final WalletRepository walletRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final TransferRepository transferRepository;
+    private final LocalTransferService localTransferService;
 
+//    @Transactional
     @Override
     public BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException {
 
@@ -144,18 +143,35 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory(User user) {
-        String loggedInEmail =  SecurityContextHolder.getContext().getAuthentication().getName();
-        user = userRepository.findUserByEmail(loggedInEmail);
-        if (user == null) {
-            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
+    public BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory() {
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByEmail(userEmail);
+        Wallet wallet = walletRepository.findWalletByUser(user);
+        String userAccountNumber = wallet.getAccountNumber();
+        List<Transfer> transfers = transferRepository
+                .findAllBySenderAccountNumberOrDestinationAccountNumberOrderByCreatedAtDesc(userAccountNumber, userAccountNumber);
+        List<TransactionHistoryResponse> userHistory = new ArrayList<>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd-MMMM-yyyy HH:mm z");
+
+
+        for (var transfer : transfers) {
+            boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
+            String amount = String.format("%.2f",transfer.getAmount());
+
+            TransactionHistoryResponse response = TransactionHistoryResponse.builder()
+                    .id(transfer.getId())
+                    .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
+                    .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
+                    .type(transfer.getType())
+                    .transactionTime(dateFormat.format(transfer.getCreatedAt()))
+                    .amount(isSender ? "-" + amount : "+" + amount)
+                    .build();
+            userHistory.add(response);
         }
-        List<TransactionHistoryResponse> history = new ArrayList<>();
-
-//        List<Transfer>
-
-
-        return null;
+        return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", userHistory);
     }
+
 
 }
