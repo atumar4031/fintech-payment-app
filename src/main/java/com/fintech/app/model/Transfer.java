@@ -33,6 +33,6 @@ public class Transfer {
     private String senderBankName;
     private String senderAccountNumber;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
 }

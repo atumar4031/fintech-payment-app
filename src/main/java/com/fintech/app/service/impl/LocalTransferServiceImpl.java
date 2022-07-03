@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
                 .narration(transferRequest.getNarration())
                 .status("PENDING")
                 .type("LOCAL")
-                .createdAt(Calendar.getInstance().getTime())
+                .createdAt(LocalDateTime.now())
                 .clientRef(UUID.randomUUID().toString())
                 .build();
 
@@ -80,7 +81,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         walletRepository.save(recipientWallet);
 
         newTransfer.setStatus("SUCCESSFUL");
-        newTransfer.setCreatedAt(Calendar.getInstance().getTime());
+        newTransfer.setCreatedAt(LocalDateTime.now());
 
         transferRepository.save(newTransfer);
 

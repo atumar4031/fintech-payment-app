@@ -2,12 +2,8 @@ package com.fintech.app.service;
 
 import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
-import com.fintech.app.model.Wallet;
 import com.fintech.app.request.UserRequest;
-import com.fintech.app.response.BaseResponse;
-import com.fintech.app.response.TransactionHistoryResponse;
-import com.fintech.app.response.UserResponse;
-import com.fintech.app.response.WalletResponse;
+import com.fintech.app.response.*;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +16,6 @@ public interface UserService {
     Boolean validateRegistrationToken(String token);
     VerificationToken generateNewToken(String oldToken);
     BaseResponse<WalletResponse> fetchUserWallet(User user);
-    BaseResponse<List<TransactionHistoryResponse>> getTransactionHistory();
+    BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy);
 
 }

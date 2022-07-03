@@ -1,9 +1,9 @@
 package com.fintech.app.response;
 
 import lombok.*;
+import org.springframework.data.domain.Pageable;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,11 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class TransactionHistoryResponse {
-    private Long id;
-    private String name;
-    private String bank;
-    private String transactionTime;
-    private String type;
-    private String amount;
-
+    List<TransactionHistoryDto> content;
+    Pageable page;
 }

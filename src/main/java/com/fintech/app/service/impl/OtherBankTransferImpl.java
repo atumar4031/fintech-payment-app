@@ -173,7 +173,7 @@ public class OtherBankTransferImpl implements TransferService {
                 .destinationAccountNumber(transferRequest.getAccountNumber())
                 .destinationBank(transferRequest.getBankCode())
                 .destinationFullName(transferRequest.getAccountName())
-                .createdAt(Calendar.getInstance().getTime())
+                .createdAt(LocalDateTime.now())
                 .senderAccountNumber(wallet.getAccountNumber())
                 .senderBankName(wallet.getBankName())
                 .senderFullName(senderFullName)
