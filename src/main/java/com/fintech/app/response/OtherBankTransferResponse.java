@@ -4,47 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Getter
+@Setter
+@ToString
 public class OtherBankTransferResponse {
     private String status;
     private String message;
     private Data data;
 
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
-    public OtherBankTransferResponse() {
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    @Override
-    public String toString() {
-        return "OtherBankTransferResponse{" +
-                "status='" + status + '\'' +
-                ", message='" + message + '\'' +
-                ", data=" + data +
-                '}';
-    }
     @lombok.Data
     @NoArgsConstructor
     @AllArgsConstructor

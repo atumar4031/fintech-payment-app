@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,18 +22,18 @@ public class Transfer {
     private Long id;
     private String destinationAccountNumber;
     private String destinationBank;
+    private String destinationFullName;
+
     private Double amount;
     private String narration;
     private String status;
     private String clientRef;
-
     private String flwRef;
-
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    private User user;
+    private String type;
+    private String senderFullName;
+    private String senderBankName;
+    private String senderAccountNumber;
 
     private LocalDateTime createdAt;
-    private LocalDateTime modifyAt;
 
 }

@@ -1,4 +1,4 @@
-package com.fintech.app.service;
+package com.fintech.app.services.impl;
 
 import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
@@ -9,6 +9,7 @@ import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.UserResponse;
+import com.fintech.app.service.WalletService;
 import com.fintech.app.service.impl.UserServiceImpl;
 import com.fintech.app.util.Util;
 import org.junit.jupiter.api.BeforeEach;
