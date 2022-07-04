@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<TransactionHistoryDto> userHistory = new ArrayList<>();
 
         for (var transfer : transfers) {
-            TransactionHistoryDto response = mapTransferToTransactionHistoryResponse(userAccountNumber,transfer);
+            TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
             userHistory.add(response);
         }
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
     }
 
-    private TransactionHistoryDto mapTransferToTransactionHistoryResponse(String userAccountNumber, Transfer transfer) {
+    private TransactionHistoryDto mapTransferToTransactionHistoryDto(String userAccountNumber, Transfer transfer) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
         boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
         String amount = String.format("%.2f",transfer.getAmount());
