@@ -23,7 +23,8 @@ public class Transfer {
     private String destinationAccountNumber;
     private String destinationBank;
     private String destinationFullName;
-    private double amount;
+
+    private Double amount;
     private String narration;
     private String status;
     private String clientRef;

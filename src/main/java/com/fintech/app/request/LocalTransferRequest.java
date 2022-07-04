@@ -1,10 +1,12 @@
 package com.fintech.app.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
+@AllArgsConstructor
 public class LocalTransferRequest {
     @NotNull(message = "pin is required")
     String pin;

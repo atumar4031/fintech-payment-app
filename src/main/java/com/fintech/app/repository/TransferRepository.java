@@ -1,5 +1,8 @@
 package com.fintech.app.repository;
 
+import org.springframework.stereotype.Repository;
+
+
 import com.fintech.app.model.Transfer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

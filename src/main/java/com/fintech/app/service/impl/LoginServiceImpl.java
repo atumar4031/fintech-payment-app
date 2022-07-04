@@ -11,8 +11,11 @@ import com.fintech.app.security.JwtTokenProvider;
 import com.fintech.app.service.BlacklistService;
 import com.fintech.app.service.LoginService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +25,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginServiceImpl implements LoginService {
 
     private final AuthenticationManager authenticationManager;
@@ -37,6 +45,7 @@ public class LoginServiceImpl implements LoginService {
     private final HttpServletRequest httpServletRequest;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JavaMailSender mailSender;
 
 
 
@@ -60,10 +69,11 @@ public class LoginServiceImpl implements LoginService {
         }
         return new BaseResponse<>(HttpStatus.OK, message, new JwtAuthResponse(token));
     }
-    @Override
-    public BaseResponse<?> logout(String token) {
 
-        token = httpServletRequest.getHeader("Authorization");
+    @Override
+    public BaseResponse<?> logout() {
+
+        String token = httpServletRequest.getHeader("Authorization");
 
         blacklistService.blacklistToken(token);
 
@@ -75,23 +85,85 @@ public class LoginServiceImpl implements LoginService {
     public BaseResponse<String> changePassword(PasswordRequest passwordRequest) {
 
         if(!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())){
-            throw new RuntimeException("new password must be the same with confirm password");
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "new password must be the same with confirm password", null);
         }
 
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(loggedInUsername);
-        User user = userRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        User user = userRepository.findUserByEmail(loggedInUsername);
+
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged In", null);
+        }
+//        User user = userRepository.findByEmail(loggedInUsername)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         boolean matchPasswordWithOldPassword = passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword());
 
         if(!matchPasswordWithOldPassword){
-            throw new RuntimeException("old password is not correct");
+           return new BaseResponse<>(HttpStatus.BAD_REQUEST, "old password is not correct", null);
         }
         user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
 
         userRepository.save(user);
         return new BaseResponse<>(HttpStatus.OK, "password changed successfully", null);
+    }
+
+    @Override
+    public BaseResponse<String> generateResetToken(PasswordRequest passwordRequest) throws MessagingException {
+        String email = passwordRequest.getEmail();
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "User with email not found", null);
+        }
+
+
+        String token = jwtTokenProvider.generatePasswordResetToken(email);
+        String url = "http://localhost:9005/api/v1/reset-password?token=" + token;
+
+        log.info("click here to reset your password: " + url);
+//        sendPasswordResetEmail(user, url);
+        return new BaseResponse<>(HttpStatus.OK,"Check Your Email to Reset Your Password",url);
+    }
+
+    private void sendPasswordResetEmail(User user, String url) {
+        String subject = "Reset your password";
+        String senderName = "Fintech App";
+        String mailContent = "<p> Dear "+ user.getLastName() +", </p>";
+        mailContent += "<p> Please click the link below to reset your password, </p>";
+        mailContent += "<h3><a href=\""+ url + "\"> RESET PASSWORD </a></h3>";
+        mailContent += "<p>Best regards <br/> Fintech team </p>";
+        try{
+            // send message
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+            helper.setFrom("almustaphatukur00@gmail.com",senderName);
+            helper.setTo(user.getEmail());
+            helper.setSubject(subject);
+            helper.setText(mailContent, true);
+            mailSender.send(message);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public BaseResponse<String> resetPassword(PasswordRequest passwordRequest, String token) {
+        if (passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())) {
+            String email = jwtTokenProvider.getUsernameFromJwt(token);
+
+            User user = userRepository.findUserByEmail(email);
+
+            if (user == null) {
+                return new BaseResponse<>(HttpStatus.NOT_FOUND, "User with email " + email + " not found", null);
+            }
+
+            user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+            userRepository.save(user);
+            return new BaseResponse<>(HttpStatus.OK,"Password Reset Successfully",null);
+        }
+        return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Passwords don't match.",null);
     }
 
 

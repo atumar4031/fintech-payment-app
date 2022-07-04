@@ -9,14 +9,14 @@ services:
     depends_on:
       - fintechDb
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://fintechAppDb:5432/fintech-app
-      - SPRING_DATASOURCE_USERNAME=fintech-app
-      - SPRING_DATASOURCE_PASSWORD=fintech-app
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://fintechAppDb:5432/fintechDb
+      - SPRING_DATASOURCE_USERNAME=fintechDb
+      - SPRING_DATASOURCE_PASSWORD=fintechDb
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   fintechDb:
     image: 'postgres:latest'
     container_name: fintechDb
     environment:
-      - POSTGRES_USER=fintech-app
-      - POSTGRES_PASSWORD=fintech-app
+      - POSTGRES_USER=fintechDb
+      - POSTGRES_PASSWORD=fintechDb

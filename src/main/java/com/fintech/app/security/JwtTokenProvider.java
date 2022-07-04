@@ -31,17 +31,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-//    public String generateSignUpConfirmationToken(String email){
-//        Date currentDate = new Date();
-//        Date expirationDate = new Date(currentDate.getTime() + 900000);
-//
-//        return Jwts.builder()
-//                .setSubject(email)
-//                .setIssuedAt(new Date())
-//                .setExpiration(expirationDate)
-//                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-//                .compact();
-//    }
+    public String generatePasswordResetToken(String email){
+        Date currentDate = new Date();
+        Date expirationDate = new Date(currentDate.getTime() + 900000);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
     public String getUsernameFromJwt(String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)

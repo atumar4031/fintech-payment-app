@@ -127,8 +127,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public BaseResponse<WalletResponse> fetchUserWallet(User user) {
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        user = userRepository.findByEmail(loggedInUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user = userRepository.findUserByEmail(loggedInUsername);
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "User not found", null);
+        }
         Wallet wallet = walletRepository.findWalletByUser(user);
         WalletResponse response = WalletResponse.builder()
                 .walletId(wallet.getId())

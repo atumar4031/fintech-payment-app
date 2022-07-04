@@ -45,6 +45,9 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
         Double transferAmount = transferRequest.getAmount();
         Double userWalletBalance = userWallet.getBalance();
+        if (transferAmount < 0) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Invalid transfer amount", null);
+        }
         if (transferAmount >= userWalletBalance) {
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Insufficient funds", null);
         }
@@ -95,7 +98,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         if(wallet != null){
             String accountName = wallet.getUser().getFirstName() + " "+
                     wallet.getUser().getLastName();
-            return new BaseResponse<String>(HttpStatus.OK, "account retrieved",accountName);
+            return new BaseResponse<>(HttpStatus.OK, "account retrieved",accountName);
         }else{
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Account not found", null);
         }
@@ -103,9 +106,6 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
     private User getUserByAccountNumber(String accountNumber) {
         Wallet wallet = walletRepository.findWalletByAccountNumber(accountNumber);
-        if (wallet == null) {
-            throw new BadCredentialsException("Wallet with " + accountNumber + " not found");
-        }
         return wallet.getUser();
     }
 }
