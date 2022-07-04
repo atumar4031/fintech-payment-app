@@ -163,17 +163,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
 
         for (var transfer : transfers) {
-            boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
-            String amount = String.format("%.2f",transfer.getAmount());
-
-            TransactionHistoryDto response = TransactionHistoryDto.builder()
-                    .id(transfer.getId())
-                    .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
-                    .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
-                    .type(transfer.getType())
-                    .transactionTime(dateFormat.format(transfer.getCreatedAt()))
-                    .amount(isSender ? "-" + amount : "+" + amount)
-                    .build();
+            TransactionHistoryDto response = mapTransferToTransactionHistoryResponse(userAccountNumber,transfer);
             userHistory.add(response);
         }
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
@@ -183,5 +173,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
     }
 
+    private TransactionHistoryDto mapTransferToTransactionHistoryResponse(String userAccountNumber, Transfer transfer) {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
+        boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
+        String amount = String.format("%.2f",transfer.getAmount());
+        TransactionHistoryDto response = TransactionHistoryDto.builder()
+                .id(transfer.getId())
+                .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
+                .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
+                .type(transfer.getType())
+                .transactionTime(dateFormat.format(transfer.getCreatedAt()))
+                .amount(isSender ? "-" + amount : "+" + amount)
+                .build();
+        return response;
+    }
 
 }
