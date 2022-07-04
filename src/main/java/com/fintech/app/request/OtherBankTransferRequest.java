@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class OtherBankTransferRequest {
 
     @JsonProperty("account_bank")
-    private String accountBank;
+    private String  accountBank;
     @JsonProperty("account_number")
     private String accountNumber;
     private Double amount;
