@@ -1,4 +1,4 @@
-package com.fintech.app.services.impl;
+package com.fintech.app.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fintech.app.controller.LoginController;
