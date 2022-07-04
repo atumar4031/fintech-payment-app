@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userHistory.add(response);
         }
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
-                .content(userHistory)
-                .page(pageable)
-                .build();
+                                                .content(userHistory)
+                                                .page(pageable)
+                                                .build();
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
     }
 
