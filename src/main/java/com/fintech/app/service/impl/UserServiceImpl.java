@@ -160,8 +160,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
         List<TransactionHistoryDto> userHistory = new ArrayList<>();
 
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
-
         for (var transfer : transfers) {
             TransactionHistoryDto response = mapTransferToTransactionHistoryResponse(userAccountNumber,transfer);
             userHistory.add(response);
