@@ -3,6 +3,7 @@ import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
+import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 @RestController
 @Slf4j
@@ -55,6 +57,16 @@ public class UserController {
     @GetMapping("/user/get-wallet")
     public BaseResponse<WalletResponse> fetchUserWallet(User user) {
         return userService.fetchUserWallet(user);
+    }
+
+
+    @GetMapping("/view-transaction-history")
+    public BaseResponse<TransactionHistoryResponse> fetchTransactionHistory
+            (@PathParam("page") Integer page,
+             @PathParam("size") Integer size,
+             @PathParam("sortBy") String sortBy) {
+
+        return userService.getTransactionHistory(page, size, sortBy);
     }
 
 

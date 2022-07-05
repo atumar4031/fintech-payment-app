@@ -65,7 +65,6 @@ class FetchUserWalletUnitTest {
 
     @Test
     void fetchUserWallet() {
-
         given(userRepository.findUserByEmail(any())).willReturn(user);
         when(walletRepository.findWalletByUser(any())).thenReturn(wallet);
 
@@ -81,7 +80,5 @@ class FetchUserWalletUnitTest {
         BaseResponse<WalletResponse> response = userService.fetchUserWallet(user);
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-
-
     }
 }

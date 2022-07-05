@@ -1,6 +1,7 @@
 package com.fintech.app.controller;
 
 import com.fintech.app.model.LocalTransfer;
+import com.fintech.app.model.Transfer;
 import com.fintech.app.request.LocalTransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.service.LocalTransferService;
@@ -28,7 +29,8 @@ public class TransferController {
     
     private final LocalTransferService localTransferService;
     @PostMapping("/local")
-    public BaseResponse<LocalTransfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){
+    public BaseResponse<Transfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){
+
         return localTransferService.makeLocalTransfer(localTransferRequest);
     }
     @GetMapping("/resolveLocalAccount/{accountNumber}")
