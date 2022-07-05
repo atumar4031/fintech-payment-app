@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Properties;
 
+import java.util.Properties;
+
 @SpringBootApplication
 public class FintechAppApplication {
 
