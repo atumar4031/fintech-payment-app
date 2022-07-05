@@ -7,6 +7,7 @@ import com.fintech.app.request.LocalTransferRequest;
 import com.fintech.app.response.BaseResponse;
 
 public interface LocalTransferService {
+
     BaseResponse<Transfer> makeLocalTransfer(LocalTransferRequest transferRequest);
     BaseResponse<String> resolveLocalAccount(String accountNumber);
 }

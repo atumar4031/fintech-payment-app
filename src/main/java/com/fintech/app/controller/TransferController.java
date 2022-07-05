@@ -30,6 +30,7 @@ public class TransferController {
     private final LocalTransferService localTransferService;
     @PostMapping("/local")
     public BaseResponse<Transfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){
+
         return localTransferService.makeLocalTransfer(localTransferRequest);
     }
     @GetMapping("/resolveLocalAccount/{accountNumber}")

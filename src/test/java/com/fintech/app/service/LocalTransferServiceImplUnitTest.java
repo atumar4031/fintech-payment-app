@@ -69,7 +69,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testSuccessfulLocalTransfer() {
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
@@ -92,7 +91,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testNegativeTransferAmount() {
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
@@ -109,7 +107,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testForInsufficientFunds() {
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
@@ -126,7 +123,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testForIncorrectTransferPin() {
-
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
@@ -143,7 +139,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testResolveLocalAccountReturnsValidUserFullName() {
-
         Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
         var response = localTransferService.resolveLocalAccount("1234564890");
         Assertions.assertThat(response.getResult()).isEqualTo("Stan Recipient");
@@ -151,7 +146,6 @@ class LocalTransferServiceImplUnitTest {
 
     @Test
     void testResolveLocalAccountReturnsNotFound() {
-
         Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(null);
         var response = localTransferService.resolveLocalAccount("1234564890");
         Assertions.assertThat(response.getMessage()).isEqualTo("Account not found");

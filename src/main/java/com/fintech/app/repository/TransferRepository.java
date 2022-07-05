@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface TransferRepository extends PagingAndSortingRepository<Transfer, Long> {
+
     Page<Transfer> findAllBySenderAccountNumberOrDestinationAccountNumber
             (String sender, String recipient, Pageable pageable);
 

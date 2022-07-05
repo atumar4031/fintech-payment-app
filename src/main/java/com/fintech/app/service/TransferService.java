@@ -11,6 +11,7 @@ import com.fintech.app.response.TransferResponse;
 import java.util.List;
 
 public interface TransferService {
+
     BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest);
     List<FlwBank> getBanks();
     BaseResponse<FlwAccountResponse> resolveAccount(FlwAccountRequest flwAccountRequest);

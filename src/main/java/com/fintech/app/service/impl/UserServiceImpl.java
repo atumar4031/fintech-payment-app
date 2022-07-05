@@ -158,24 +158,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (page == null) page = 0;
         if (size == null) size = 10;
         if (sortBy == null) sortBy = "createdAt";
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         User user = userRepository.findUserByEmail(userEmail);
+
         Wallet wallet = walletRepository.findWalletByUser(user);
+
         String userAccountNumber = wallet.getAccountNumber();
+
         Page<Transfer> transfers = transferRepository
                 .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
+
         List<TransactionHistoryDto> userHistory = new ArrayList<>();
 
         for (var transfer : transfers) {
             TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
             userHistory.add(response);
         }
+
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
                                                 .content(userHistory)
                                                 .page(pageable)
                                                 .build();
+
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
     }
 

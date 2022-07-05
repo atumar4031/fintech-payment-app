@@ -37,6 +37,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
     public BaseResponse<Transfer> makeLocalTransfer(LocalTransferRequest transferRequest) {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -60,6 +61,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         }
 
         String recipientName = recipient.getFirstName() + " " + recipient.getLastName();
+
         Transfer newTransfer = Transfer.builder()
                 .senderFullName(user.getFirstName() + " " + user.getLastName())
                 .senderAccountNumber(userWallet.getAccountNumber())
@@ -103,7 +105,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
             String accountName = wallet.getUser().getFirstName() + " "+
                     wallet.getUser().getLastName();
             return new BaseResponse<>(HttpStatus.OK, "account retrieved",accountName);
-        }else{
+        } else {
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Account not found", null);
         }
     }

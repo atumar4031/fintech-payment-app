@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class TransactionHistoryDto {
 
+
     private Long id;
     private String name;
     private String bank;

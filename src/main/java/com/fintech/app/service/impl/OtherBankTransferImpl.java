@@ -48,6 +48,7 @@ public class OtherBankTransferImpl implements TransferService {
 
     @Override
     public List<FlwBank> getBanks() {
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -61,13 +62,11 @@ public class OtherBankTransferImpl implements TransferService {
                 request,
                 FlwBankResponse.class).getBody();
 
-
         return flwBankResponse.getData();
     }
 
     @Override
     public BaseResponse<FlwAccountResponse> resolveAccount(FlwAccountRequest flwAccountRequest) {
-
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

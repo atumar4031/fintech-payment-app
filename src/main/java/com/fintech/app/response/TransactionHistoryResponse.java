@@ -14,4 +14,5 @@ public class TransactionHistoryResponse {
 
     List<TransactionHistoryDto> content;
     Pageable page;
+
 }

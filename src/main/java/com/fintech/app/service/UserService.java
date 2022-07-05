@@ -12,7 +12,9 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import javax.servlet.http.HttpServletRequest;
 
 public interface UserService {
+
     BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException;
+
     BaseResponse<UserResponse> getUser(long userId);
     void saveVerificationTokenForUser(String token, User user);
     Boolean validateRegistrationToken(String token);

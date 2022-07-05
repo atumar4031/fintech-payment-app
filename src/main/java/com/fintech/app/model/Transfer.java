@@ -18,6 +18,7 @@ public class Transfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String destinationAccountNumber;
     private String destinationBank;
     private String destinationFullName;
