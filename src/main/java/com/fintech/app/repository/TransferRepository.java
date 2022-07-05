@@ -1,11 +1,12 @@
 package com.fintech.app.repository;
 
-import org.springframework.stereotype.Repository;
-
-
 import com.fintech.app.model.Transfer;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface TransferRepository extends JpaRepository<Transfer, Long> {
+public interface TransferRepository extends PagingAndSortingRepository<Transfer, Long> {
+    Page<Transfer> findAllBySenderAccountNumberOrDestinationAccountNumber
+            (String sender, String recipient, Pageable pageable);
 
 }

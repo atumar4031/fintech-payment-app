@@ -1,9 +1,11 @@
 package com.fintech.app.service.impl;
 
 import com.fintech.app.model.LocalTransfer;
+import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
 import com.fintech.app.repository.LocalTransferRepository;
+import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.LocalTransferRequest;
@@ -11,7 +13,6 @@ import com.fintech.app.response.BaseResponse;
 import com.fintech.app.service.LocalTransferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,17 +20,22 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import java.util.UUID;
+
+
 @Service
 @RequiredArgsConstructor
 public class LocalTransferServiceImpl implements LocalTransferService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
-    private final LocalTransferRepository localTransferRepository;
+    private final TransferRepository transferRepository;
     private final PasswordEncoder passwordEncoder;
 
 
     @Override
-    public BaseResponse<LocalTransfer> makeLocalTransfer(LocalTransferRequest transferRequest) {
+
+    public BaseResponse<Transfer> makeLocalTransfer(LocalTransferRequest transferRequest) {
+
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -37,6 +43,8 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         User recipient = getUserByAccountNumber(transferRequest.getAccountNumber());
 
         Wallet userWallet = walletRepository.findWalletByUser(user);
+
+        Wallet recipientWallet = walletRepository.findWalletByUser(recipient);
 
         Double transferAmount = transferRequest.getAmount();
         Double userWalletBalance = userWallet.getBalance();
@@ -52,20 +60,24 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         }
 
         String recipientName = recipient.getFirstName() + " " + recipient.getLastName();
-        LocalTransfer newTransfer = LocalTransfer.builder()
-                .senderAccountName(user.getFirstName() + " " + user.getLastName())
+        Transfer newTransfer = Transfer.builder()
+                .senderFullName(user.getFirstName() + " " + user.getLastName())
                 .senderAccountNumber(userWallet.getAccountNumber())
-                .recipientAccountName(recipientName)
-                .recipientAccountNumber(transferRequest.getAccountNumber())
-                .transferAmount(transferRequest.getAmount())
+                .senderBankName(userWallet.getBankName())
+                .destinationFullName(recipientName)
+                .destinationAccountNumber(transferRequest.getAccountNumber())
+                .destinationBank(recipientWallet.getBankName())
+                .amount(transferRequest.getAmount())
+                .clientRef(UUID.randomUUID().toString())
                 .narration(transferRequest.getNarration())
+                .type("LOCAL")
                 .status("PENDING")
-                .transferDate(LocalDateTime.now())
+                .user(user)
+                .createdAt(LocalDateTime.now())
                 .build();
 
-        localTransferRepository.save(newTransfer);
+        transferRepository.save(newTransfer);
 
-        Wallet recipientWallet = walletRepository.findWalletByUser(recipient);
         double recipientWalletBalance = recipientWallet.getBalance();
 
         userWallet.setBalance(userWalletBalance - transferAmount);
@@ -76,9 +88,9 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         walletRepository.save(recipientWallet);
 
         newTransfer.setStatus("SUCCESSFUL");
-        newTransfer.setTransferDate(LocalDateTime.now());
+        newTransfer.setModifyAt(LocalDateTime.now());
 
-        localTransferRepository.save(newTransfer);
+        transferRepository.save(newTransfer);
 
         return new BaseResponse<>(HttpStatus.OK, "Transfer to " + recipientName + " successful", newTransfer);
     }

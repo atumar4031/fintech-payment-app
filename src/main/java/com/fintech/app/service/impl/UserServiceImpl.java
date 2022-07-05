@@ -1,16 +1,16 @@
 package com.fintech.app.service.impl;
 
+import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.VerificationToken;
 import com.fintech.app.model.Wallet;
+import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.VerificationTokenRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.request.UserRequest;
-import com.fintech.app.response.BaseResponse;
-import com.fintech.app.response.UserResponse;
-import com.fintech.app.response.WalletResponse;
+import com.fintech.app.response.*;
 import com.fintech.app.service.UserService;
 import com.fintech.app.service.WalletService;
 import com.fintech.app.util.RegistrationCompleteEvent;
@@ -19,6 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,6 +50,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final WalletService walletService;
     private final WalletRepository walletRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final TransferRepository transferRepository;
 
 
 //    @Transactional
@@ -144,6 +152,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
     }
 
+    @Override
+    public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {
+
+        if (page == null) page = 0;
+        if (size == null) size = 10;
+        if (sortBy == null) sortBy = "createdAt";
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByEmail(userEmail);
+        Wallet wallet = walletRepository.findWalletByUser(user);
+        String userAccountNumber = wallet.getAccountNumber();
+        Page<Transfer> transfers = transferRepository
+                .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
+        List<TransactionHistoryDto> userHistory = new ArrayList<>();
+
+        for (var transfer : transfers) {
+            TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
+            userHistory.add(response);
+        }
+        TransactionHistoryResponse response = TransactionHistoryResponse.builder()
+                                                .content(userHistory)
+                                                .page(pageable)
+                                                .build();
+        return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
+    }
+
+    private TransactionHistoryDto mapTransferToTransactionHistoryDto(String userAccountNumber, Transfer transfer) {
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
+        boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
+        String amount = String.format("%.2f",transfer.getAmount());
+        TransactionHistoryDto response = TransactionHistoryDto.builder()
+                .id(transfer.getId())
+                .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
+                .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
+                .type(transfer.getType())
+                .transactionTime(dateFormat.format(transfer.getCreatedAt()))
+                .amount(isSender ? "-" + amount : "+" + amount)
+                .build();
+
+        return response;
+    }
 
 //    @Override
 //    public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {

@@ -26,7 +26,6 @@ public class FintechAppApplication {
 
 		mailSender.setUsername("almustaphatukur00@gmail.com");
 		mailSender.setPassword("wsscoulaqmeuxinv");
-		//almustaphatukur00@gmail.com;SENDER_PASSWORD=wsscoulaqmeuxinv
 
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");
