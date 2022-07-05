@@ -133,24 +133,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return verificationToken;
     }
 
-    @Override
-    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
-        String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        user = userRepository.findUserByEmail(loggedInUsername);
-        if (user == null) {
-            return new BaseResponse<>(HttpStatus.NOT_FOUND, "User not found", null);
-        }
-        Wallet wallet = walletRepository.findWalletByUser(user);
-        WalletResponse response = WalletResponse.builder()
-                .walletId(wallet.getId())
-                .accountNumber(wallet.getAccountNumber())
-                .balance(wallet.getBalance())
-                .bankName(wallet.getBankName())
-                .createdAt(wallet.getCreatedAt())
-                .updatedAt(wallet.getModifyAt())
-                .build();
-        return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
-    }
 
     @Override
     public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {

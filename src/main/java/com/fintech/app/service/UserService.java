@@ -19,7 +19,6 @@ public interface UserService {
     void saveVerificationTokenForUser(String token, User user);
     Boolean validateRegistrationToken(String token);
     VerificationToken generateNewToken(String oldToken);
-    BaseResponse<WalletResponse> fetchUserWallet(User user);
 
     BaseResponse<TransactionHistoryResponse>
     getTransactionHistory(Integer page, Integer size, String sortBy);

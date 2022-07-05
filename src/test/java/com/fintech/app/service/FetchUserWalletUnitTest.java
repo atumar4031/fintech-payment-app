@@ -10,6 +10,7 @@ import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.impl.LocalTransferServiceImpl;
 import com.fintech.app.service.impl.UserServiceImpl;
+import com.fintech.app.service.impl.WalletServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class FetchUserWalletUnitTest {
     private Wallet wallet;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private WalletServiceImpl walletService;
 
     @BeforeEach
     void  setUp(){
@@ -68,7 +69,7 @@ class FetchUserWalletUnitTest {
         given(userRepository.findUserByEmail(any())).willReturn(user);
         when(walletRepository.findWalletByUser(any())).thenReturn(wallet);
 
-        BaseResponse<WalletResponse> response = userService.fetchUserWallet(user);
+        BaseResponse<WalletResponse> response = walletService.fetchUserWallet(user);
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 
@@ -77,7 +78,7 @@ class FetchUserWalletUnitTest {
     @Test
     void testForWhenUserIsNotLoggedIn(){
         when(userRepository.findUserByEmail(any())).thenReturn(null);
-        BaseResponse<WalletResponse> response = userService.fetchUserWallet(user);
+        BaseResponse<WalletResponse> response = walletService.fetchUserWallet(user);
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }

@@ -49,15 +49,12 @@ public class UserController {
         return new BaseResponse(HttpStatus.OK, "verification link sent", null);
     }
 
-    @GetMapping("/register/{userid}")
+    @GetMapping("/{userid}")
     public BaseResponse<UserResponse> getUser(@PathVariable("userid") long userId){
         return userService.getUser(userId);
     }
 
-    @GetMapping("/user/get-wallet")
-    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
-        return userService.fetchUserWallet(user);
-    }
+
 
 
     @GetMapping("/view-transaction-history")
