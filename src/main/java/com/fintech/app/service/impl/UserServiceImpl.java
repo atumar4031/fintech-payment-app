@@ -50,10 +50,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException {
 
         if(userRepository.existsByEmail(userRequest.getEmail()))
-            throw new RuntimeException("User already exist with this email");
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "User already exist with this email", null);
 
         if (!utility.validatePassword(userRequest.getPassword(), userRequest.getConfirmPassword()))
-                 throw new RuntimeException("Password not matched");
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Password not matched", null);
 
         User user = utility.requestToUser(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
@@ -107,7 +107,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return false;
         User user = verificationToken.getUser();
         Calendar cal = Calendar.getInstance();
-        if((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0){
+        if((verificationToken.getExpirationTime().getTime() - cal.getTime().getTime()) <= 0
+                && !user.isStatus()){
             verificationTokenRepository.delete(verificationToken);
             return false;
         }
@@ -144,45 +145,45 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
 
-    @Override
-    public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {
-
-        if (page == null) page = 0;
-        if (size == null) size = 10;
-        if (sortBy == null) sortBy = "createdAt";
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByEmail(userEmail);
-        Wallet wallet = walletRepository.findWalletByUser(user);
-        String userAccountNumber = wallet.getAccountNumber();
-        Page<Transfer> transfers = transferRepository
-                .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
-        List<TransactionHistoryDto> userHistory = new ArrayList<>();
-
-        for (var transfer : transfers) {
-            TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
-            userHistory.add(response);
-        }
-        TransactionHistoryResponse response = TransactionHistoryResponse.builder()
-                                                .content(userHistory)
-                                                .page(pageable)
-                                                .build();
-        return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
-    }
-
-    private TransactionHistoryDto mapTransferToTransactionHistoryDto(String userAccountNumber, Transfer transfer) {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
-        boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
-        String amount = String.format("%.2f",transfer.getAmount());
-        TransactionHistoryDto response = TransactionHistoryDto.builder()
-                .id(transfer.getId())
-                .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
-                .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
-                .type(transfer.getType())
-                .transactionTime(dateFormat.format(transfer.getCreatedAt()))
-                .amount(isSender ? "-" + amount : "+" + amount)
-                .build();
-        return response;
-    }
+//    @Override
+//    public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {
+//
+//        if (page == null) page = 0;
+//        if (size == null) size = 10;
+//        if (sortBy == null) sortBy = "createdAt";
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+//
+//        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = userRepository.findUserByEmail(userEmail);
+//        Wallet wallet = walletRepository.findWalletByUser(user);
+//        String userAccountNumber = wallet.getAccountNumber();
+//        Page<Transfer> transfers = transferRepository
+//                .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
+//        List<TransactionHistoryDto> userHistory = new ArrayList<>();
+//
+//        for (var transfer : transfers) {
+//            TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
+//            userHistory.add(response);
+//        }
+//        TransactionHistoryResponse response = TransactionHistoryResponse.builder()
+//                                                .content(userHistory)
+//                                                .page(pageable)
+//                                                .build();
+//        return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
+//    }
+//
+//    private TransactionHistoryDto mapTransferToTransactionHistoryDto(String userAccountNumber, Transfer transfer) {
+//        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
+//        boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
+//        String amount = String.format("%.2f",transfer.getAmount());
+//        TransactionHistoryDto response = TransactionHistoryDto.builder()
+//                .id(transfer.getId())
+//                .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
+//                .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
+//                .type(transfer.getType())
+//                .transactionTime(dateFormat.format(transfer.getCreatedAt()))
+//                .amount(isSender ? "-" + amount : "+" + amount)
+//                .build();
+//        return response;
+//    }
 }

@@ -44,7 +44,7 @@ public class UserController {
         VerificationToken verificationToken = userService.generateNewToken(oldToken);
         User user = verificationToken.getUser();
         utility.resendVerificationTokenMail(user, utility.applicationUrl(request), verificationToken);
-        return new BaseResponse(HttpStatus.OK, "verification link send", null);
+        return new BaseResponse(HttpStatus.OK, "verification link sent", null);
     }
 
     @GetMapping("/register/{userid}")
