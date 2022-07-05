@@ -23,7 +23,6 @@ public class LoginController {
 
     @PostMapping("/login")
     public BaseResponse<JwtAuthResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
-
         return loginService.login(loginRequest);
     }
 
