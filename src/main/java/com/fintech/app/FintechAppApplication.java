@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Properties;
+
 @SpringBootApplication
 public class FintechAppApplication {
 
@@ -18,8 +20,23 @@ public class FintechAppApplication {
 
 	@Bean
 	public JavaMailSender mailSender() {
-		return new JavaMailSenderImpl();
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.gmail.com");
+		mailSender.setPort(587);
+
+		mailSender.setUsername("almustaphatukur00@gmail.com");
+		mailSender.setPassword("wsscoulaqmeuxinv");
+		//almustaphatukur00@gmail.com;SENDER_PASSWORD=wsscoulaqmeuxinv
+
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.debug", "true");
+
+		return mailSender;
 	}
+
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
