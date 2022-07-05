@@ -48,6 +48,7 @@ public class OtherBankTransferImpl implements TransferService {
 
     @Override
     public List<FlwBank> getBanks() {
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -61,13 +62,11 @@ public class OtherBankTransferImpl implements TransferService {
                 request,
                 FlwBankResponse.class).getBody();
 
-
         return flwBankResponse.getData();
     }
 
     @Override
     public BaseResponse<FlwAccountResponse> resolveAccount(FlwAccountRequest flwAccountRequest) {
-
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -155,6 +154,7 @@ public class OtherBankTransferImpl implements TransferService {
     }
 
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
+
         String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user);
         int amount = transferRequest.getAmount().intValue();
@@ -165,16 +165,23 @@ public class OtherBankTransferImpl implements TransferService {
                 .amount(transferRequest.getAmount())
                 .clientRef(clientReference)
                 .flwRef(clientReference)
+                .type("OTHER")
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)
+                .senderFullName(user.getFirstName() + " " + user.getLastName())
+                .senderAccountNumber(wallet.getAccountNumber())
+                .senderBankName(wallet.getBankName())
                 .destinationAccountNumber(transferRequest.getAccountNumber())
                 .destinationBank(transferRequest.getBankCode())
+                .destinationFullName(transferRequest.getAccountName())
                 .createdAt(LocalDateTime.now())
                 .modifyAt(LocalDateTime.now())
                 .user(user)
                 .build();
 
         walletRepository.save(wallet);
+
         return transferRepository.save(transfer);
+
     }
 }

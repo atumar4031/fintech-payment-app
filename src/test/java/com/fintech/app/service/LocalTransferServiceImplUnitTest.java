@@ -1,14 +1,14 @@
 package com.fintech.app.service;
 
 import com.fintech.app.model.LocalTransfer;
+import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
-import com.fintech.app.repository.LocalTransferRepository;
+import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.LocalTransferRequest;
 import com.fintech.app.service.impl.LocalTransferServiceImpl;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -38,14 +37,14 @@ class LocalTransferServiceImplUnitTest {
     @Mock
     private WalletRepository walletRepository;
     @Mock
-    private LocalTransferRepository localTransferRepository;
+    private TransferRepository transferRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
     private User user1;
     private User user2;
     private Wallet wallet1;
     private Wallet wallet2;
-    private LocalTransfer localTransfer;
+    private Transfer localTransfer;
 
     @InjectMocks
     private LocalTransferServiceImpl localTransferService;
@@ -57,14 +56,14 @@ class LocalTransferServiceImplUnitTest {
         user2 = User.builder().firstName("Stan").lastName("Recipient").email("stan2@gmail.com").build();
         wallet1 = Wallet.builder().accountNumber("1234567890").user(user1).balance(10000.0).build();
         wallet2 = Wallet.builder().accountNumber("1234564890").user(user2).balance(2000.0).build();
-        localTransfer = LocalTransfer.builder().transferId(1L).senderAccountName(user1.getFirstName() + " " + user1.getLastName())
+        localTransfer = Transfer.builder().id(1L).senderFullName(user1.getFirstName() + " " + user1.getLastName())
                 .senderAccountNumber(wallet1.getAccountNumber())
-                .recipientAccountName(user2.getFirstName() + " " + user2.getLastName())
-                .recipientAccountNumber(wallet2.getAccountNumber())
-                .transferAmount(2000.0)
+                .destinationFullName(user2.getFirstName() + " " + user2.getLastName())
+                .destinationAccountNumber(wallet2.getAccountNumber())
+                .amount(2000.0)
                 .narration("Stan Sender")
                 .status("SUCCESSFUL")
-                .transferDate(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -80,7 +79,7 @@ class LocalTransferServiceImplUnitTest {
         Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
         Mockito.when(walletRepository.findWalletByUser(user2)).thenReturn(wallet2);
         Mockito.when(passwordEncoder.matches(any(), any())).thenReturn(true);
-        Mockito.when(localTransferRepository.save(any())).thenReturn(localTransfer);
+        Mockito.when(transferRepository.save(any())).thenReturn(localTransfer);
         when(walletRepository.save(any())).thenReturn(null);
         var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
                 "1234", 2000.0, wallet2.getAccountNumber(), "Stan Sender"
