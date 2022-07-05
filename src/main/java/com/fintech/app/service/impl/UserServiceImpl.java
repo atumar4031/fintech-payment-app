@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final TransferRepository transferRepository;
 
-    @Transactional
+//    @Transactional
     @Override
     public BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException {
 

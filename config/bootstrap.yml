@@ -8,7 +8,7 @@ spring:
     username: vkbxbgblziemrm
     password: 54902f895b86818a9f78ff9fae464f66b9b8e236d2fa15e6b24d5a126291a53b
   jpa:
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create
     generate-ddl: true
     show-sql: false
 
