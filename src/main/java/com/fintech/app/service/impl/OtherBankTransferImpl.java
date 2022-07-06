@@ -33,13 +33,13 @@ import java.util.UUID;
 @Service
 public class OtherBankTransferImpl implements OtherBankTransferService {
 
-    private  UserRepository userRepository;
-    private  WalletRepository walletRepository;
-    private  TransferRepository transferRepository;
-    private  PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
+    private final TransferRepository transferRepository;
+    private final PasswordEncoder passwordEncoder;
 
-//    @Value("${FLW_SECRET_KEY}")
-    private final String AUTHORIZATION = "FLWSECK-6cca3c5c045ba55aec5811d6a0902b59-X";
+    @Value("${FLW_SECRET_KEY}")
+    private String AUTHORIZATION;
 
     @Autowired
     public OtherBankTransferImpl(UserRepository userRepository,
