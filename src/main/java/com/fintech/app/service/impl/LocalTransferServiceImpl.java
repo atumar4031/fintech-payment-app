@@ -41,11 +41,20 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        User recipient = getUserByAccountNumber(transferRequest.getAccountNumber());
+        Wallet recipientWallet = walletRepository.findWalletByAccountNumber(transferRequest.getAccountNumber());
+        if (recipientWallet == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "Recipient Wallet not found", null);
+        }
+        User recipient = recipientWallet.getUser();
+        if (recipient == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "Recipient not found", null);
+        }
 
         Wallet userWallet = walletRepository.findWalletByUser(user);
+        if (userWallet == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "Sender Wallet not found", null);
+        }
 
-        Wallet recipientWallet = walletRepository.findWalletByUser(recipient);
 
         Double transferAmount = transferRequest.getAmount();
         Double userWalletBalance = userWallet.getBalance();
@@ -110,8 +119,4 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         }
     }
 
-    private User getUserByAccountNumber(String accountNumber) {
-        Wallet wallet = walletRepository.findWalletByAccountNumber(accountNumber);
-        return wallet.getUser();
-    }
 }

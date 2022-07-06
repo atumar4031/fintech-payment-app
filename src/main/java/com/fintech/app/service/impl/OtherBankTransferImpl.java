@@ -17,7 +17,10 @@ import com.fintech.app.response.OtherBankTransferResponse;
 import com.fintech.app.service.TransferService;
 import com.fintech.app.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -34,6 +37,9 @@ public class OtherBankTransferImpl implements TransferService {
     private final WalletRepository walletRepository;
     private final TransferRepository transferRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${FLW_SECRET_KEY}")
+    private String AUTHORIZATION;
 
     @Autowired
     public OtherBankTransferImpl(UserRepository userRepository,
@@ -52,7 +58,7 @@ public class OtherBankTransferImpl implements TransferService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer "+ Constant.AUTHORIZATION);
+        headers.add("Authorization", "Bearer "+ AUTHORIZATION);
 
         HttpEntity<FlwBankResponse> request = new  HttpEntity<>(null, headers);
 
@@ -71,7 +77,7 @@ public class OtherBankTransferImpl implements TransferService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer "+ Constant.AUTHORIZATION);
+        headers.add("Authorization", "Bearer "+ AUTHORIZATION);
 
         HttpEntity<FlwAccountRequest> request = new  HttpEntity<>(flwAccountRequest, headers);
 
@@ -89,7 +95,7 @@ public class OtherBankTransferImpl implements TransferService {
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
         OtherBankTransferResponse response = new OtherBankTransferResponse();
         try{
-           User user = retrieveUserDetails(transferRequest.getUserId());
+           User user = retrieveUserDetails();
            if(!validatePin(transferRequest.getPin(), user))
                new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
            if(!validateRequestBalance(transferRequest.getAmount()))
@@ -107,9 +113,11 @@ public class OtherBankTransferImpl implements TransferService {
          return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
 
-    private User retrieveUserDetails(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    private User retrieveUserDetails() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return user;
     }
 
@@ -141,7 +149,7 @@ public class OtherBankTransferImpl implements TransferService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer "+ Constant.AUTHORIZATION);
+        headers.add("Authorization", "Bearer "+ AUTHORIZATION);
 
         HttpEntity<OtherBankTransferRequest> request = new  HttpEntity<>(otherBankTransferRequest, headers);
 

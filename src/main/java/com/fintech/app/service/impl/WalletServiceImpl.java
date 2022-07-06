@@ -11,6 +11,7 @@ import com.fintech.app.service.WalletService;
 import com.fintech.app.util.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,13 +27,16 @@ public class WalletServiceImpl implements WalletService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
 
+    @Value("${FLW_SECRET_KEY}")
+    private String AUTHORIZATION;
+
     @Override
     public Wallet createWallet(FlwWalletRequest walletRequest) throws JSONException {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer "+ Constant.AUTHORIZATION);
+        headers.add("Authorization", "Bearer "+ AUTHORIZATION);
 
         FlwWalletRequest payload = generatePayload(walletRequest);
 

@@ -22,3 +22,5 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  FLW_SECRET_KEY: ${FLW_SECRET_KEY}
