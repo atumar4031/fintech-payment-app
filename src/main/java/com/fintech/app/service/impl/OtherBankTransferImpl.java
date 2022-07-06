@@ -38,8 +38,8 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     private  TransferRepository transferRepository;
     private  PasswordEncoder passwordEncoder;
 
-    @Value("${FLW_SECRET_KEY}")
-    private String AUTHORIZATION;
+//    @Value("${FLW_SECRET_KEY}")
+    private final String AUTHORIZATION = "FLWSECK-6cca3c5c045ba55aec5811d6a0902b59-X";
 
     @Autowired
     public OtherBankTransferImpl(UserRepository userRepository,
