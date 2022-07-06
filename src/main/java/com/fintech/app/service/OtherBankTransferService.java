@@ -6,11 +6,10 @@ import com.fintech.app.request.TransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.response.OtherBankTransferResponse;
-import com.fintech.app.response.TransferResponse;
 
 import java.util.List;
 
-public interface TransferService {
+public interface OtherBankTransferService {
 
     BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest);
     List<FlwBank> getBanks();

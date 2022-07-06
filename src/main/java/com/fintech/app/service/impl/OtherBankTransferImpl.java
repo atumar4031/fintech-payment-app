@@ -14,7 +14,7 @@ import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.response.FlwBankResponse;
 import com.fintech.app.response.OtherBankTransferResponse;
-import com.fintech.app.service.TransferService;
+import com.fintech.app.service.OtherBankTransferService;
 import com.fintech.app.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class OtherBankTransferImpl implements TransferService {
+public class OtherBankTransferImpl implements OtherBankTransferService {
 
-    private final UserRepository userRepository;
-    private final WalletRepository walletRepository;
-    private final TransferRepository transferRepository;
-    private final PasswordEncoder passwordEncoder;
+    private  UserRepository userRepository;
+    private  WalletRepository walletRepository;
+    private  TransferRepository transferRepository;
+    private  PasswordEncoder passwordEncoder;
 
     @Value("${FLW_SECRET_KEY}")
     private String AUTHORIZATION;

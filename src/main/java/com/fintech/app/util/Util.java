@@ -5,6 +5,7 @@ import com.fintech.app.model.VerificationToken;
 import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.UserResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -18,6 +19,9 @@ import java.time.LocalDateTime;
 @Component
 @Slf4j
 public class Util {
+
+    @Value("${TEMP_APP_URL}")
+    private String TEMP_APP_URL;
 
     public User requestToUser(UserRequest userRequest) {
         return User.builder()
@@ -51,7 +55,7 @@ public class Util {
                                             VerificationToken verificationToken) {
         // send email to user
         String url = applicationUrl
-                + "/verifyRegistration?token="
+                + "="
                 + verificationToken.getToken();
         log.info("Verification token: {} has been resend", url);
 
@@ -59,10 +63,13 @@ public class Util {
     }
 
     public String applicationUrl(HttpServletRequest request) {
-        return "http://"+request.getServerName() +
-                ":" +
-                request.getServerPort() +
-                request.getContextPath();
+        return TEMP_APP_URL;
+
+//        return "http://"+request.getServerName() +
+//                ":" +
+//                request.getServerPort() +
+//                request.getContextPath();
+
     }
 
 }
