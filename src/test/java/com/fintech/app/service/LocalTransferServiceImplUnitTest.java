@@ -73,17 +73,17 @@ class LocalTransferServiceImplUnitTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
         Mockito.when(authentication.getName()).thenReturn(user1.getEmail());
+        Mockito.when(walletRepository.findWalletByAccountNumber(anyString())).thenReturn(wallet2);
         Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(user1));
-        Mockito.when(walletRepository.findWalletByUser(user1)).thenReturn(wallet1);
-        Mockito.when(walletRepository.findWalletByUser(user2)).thenReturn(wallet2);
+        Mockito.when(walletRepository.findWalletByUser(any())).thenReturn(wallet1);
+//        Mockito.when(walletRepository.findWalletByUser(eq(user2))).thenReturn(wallet2);
         Mockito.when(passwordEncoder.matches(any(), any())).thenReturn(true);
         Mockito.when(transferRepository.save(any())).thenReturn(localTransfer);
-        when(walletRepository.save(any())).thenReturn(null);
         var response = localTransferService.makeLocalTransfer(new LocalTransferRequest(
                 "1234", 2000.0, wallet2.getAccountNumber(), "Stan Sender"
         ));
+//        when(walletRepository.save(any())).thenReturn(null);
         Assertions.assertThat(response.getMessage()).isEqualTo("Transfer to " + user2.getFirstName() + " " + user2.getLastName() + " successful");
         Assertions.assertThat(wallet2.getBalance()).isEqualTo(4000.0);
         Assertions.assertThat(wallet1.getBalance()).isEqualTo(8000.0);

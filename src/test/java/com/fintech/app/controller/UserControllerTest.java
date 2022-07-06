@@ -78,7 +78,7 @@ class UserControllerTest {
                         userResponse));
 
         String content = (new ObjectMapper()).writeValueAsString(userRequest);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/register")
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
