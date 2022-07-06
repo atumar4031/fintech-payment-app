@@ -122,7 +122,7 @@ public class LoginServiceImpl implements LoginService {
         String url = "http://localhost:9005/api/v1/reset-password?token=" + token;
 
         log.info("click here to reset your password: " + url);
-//        sendPasswordResetEmail(user, url);
+        sendPasswordResetEmail(user, url);
         return new BaseResponse<>(HttpStatus.OK,"Check Your Email to Reset Your Password",url);
     }
 

@@ -21,11 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,10 +133,15 @@ class UserServiceTest{
     @Test
     @DisplayName("TEST: get user profile")
     void should_getUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn(user.getEmail());
+        when(userRepository.findUserByEmail(any())).thenReturn(user);
         when(util.userToResponse(user)).thenReturn(userResponse);
 
-        BaseResponse<UserResponse> returnUser = userService.getUser(1L);
+        BaseResponse<UserResponse> returnUser = userService.getUser();
         assertThat(returnUser).isNotNull();
         assertThat(returnUser.getResult()).isNotNull();
         assertThat(returnUser.getResult().getEmail()).isEqualTo(user.getEmail());

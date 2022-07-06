@@ -49,9 +49,9 @@ public class UserController {
         return new BaseResponse(HttpStatus.OK, "verification link sent", null);
     }
 
-    @GetMapping("/{userid}")
-    public BaseResponse<UserResponse> getUser(@PathVariable("userid") long userId){
-        return userService.getUser(userId);
+    @GetMapping()
+    public BaseResponse<UserResponse> getUser(){
+        return userService.getUser();
     }
 
 

@@ -91,8 +91,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public BaseResponse<UserResponse> getUser(long userId) {
-        User user= userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    public BaseResponse<UserResponse> getUser() {
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user= userRepository.findUserByEmail(loggedInEmail);
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "No user logged in", null);
+        }
         UserResponse userResponse = utility.userToResponse(user);
         return new BaseResponse<>(HttpStatus.OK, "user profile", userResponse);
     }

@@ -16,7 +16,7 @@ public class WalletController {
     private final WalletService walletService;
 
     @GetMapping()
-    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
-        return walletService.fetchUserWallet(user);
+    public BaseResponse<WalletResponse> fetchUserWallet() {
+        return walletService.fetchUserWallet();
     }
 }

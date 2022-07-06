@@ -9,5 +9,5 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 
 public interface WalletService {
     Wallet createWallet(FlwWalletRequest walletRequest) throws JSONException;
-    BaseResponse<WalletResponse> fetchUserWallet(User user);
+    BaseResponse<WalletResponse> fetchUserWallet();
 }

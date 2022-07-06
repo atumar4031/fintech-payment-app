@@ -47,10 +47,6 @@ class FetchUserWalletUnitTest {
 
     @BeforeEach
     void  setUp(){
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
         user = User.builder()
                 .firstName("Stanley")
                 .lastName("Gabriel")
@@ -66,10 +62,15 @@ class FetchUserWalletUnitTest {
 
     @Test
     void fetchUserWallet() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn(user.getEmail());
         given(userRepository.findUserByEmail(any())).willReturn(user);
         when(walletRepository.findWalletByUser(any())).thenReturn(wallet);
 
-        BaseResponse<WalletResponse> response = walletService.fetchUserWallet(user);
+        BaseResponse<WalletResponse> response = walletService.fetchUserWallet();
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 
@@ -77,8 +78,14 @@ class FetchUserWalletUnitTest {
 
     @Test
     void testForWhenUserIsNotLoggedIn(){
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn(user.getEmail());
+        when(userRepository.findUserByEmail(any())).thenReturn(user);
         when(userRepository.findUserByEmail(any())).thenReturn(null);
-        BaseResponse<WalletResponse> response = walletService.fetchUserWallet(user);
+        BaseResponse<WalletResponse> response = walletService.fetchUserWallet();
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }

@@ -1,5 +1,6 @@
 package com.fintech.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class Transfer {
 
     private String flwRef;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private User user;

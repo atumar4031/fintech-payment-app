@@ -52,9 +52,9 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public BaseResponse<WalletResponse> fetchUserWallet(User user) {
+    public BaseResponse<WalletResponse> fetchUserWallet() {
         String loggedInUsername =  SecurityContextHolder.getContext().getAuthentication().getName();
-        user = userRepository.findUserByEmail(loggedInUsername);
+       User user = userRepository.findUserByEmail(loggedInUsername);
         if (user == null) {
             return new BaseResponse<>(HttpStatus.NOT_FOUND, "User not found", null);
         }
