@@ -26,12 +26,12 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
       
-#name: Master Branch
-#on:
-#  pull_request:
-#    branches:
-#      - 'main'
-#jobs:
+name: Master Branch
+on:
+  pull_request:
+    branches:
+      - 'main'
+jobs:
   test:
     name: Test - Units & Integrations
     runs-on: ubuntu-18.04
