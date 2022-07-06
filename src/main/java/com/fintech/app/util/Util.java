@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 @Slf4j
 public class Util {
 
-    @Value("${TEMP_APP_URL}")
-    private String TEMP_APP_URL;
+//    @Value("${TEMP_APP_URL}")
+//    private String TEMP_APP_URL;
 
     public User requestToUser(UserRequest userRequest) {
         return User.builder()
@@ -63,13 +63,14 @@ public class Util {
     }
 
     public String applicationUrl(HttpServletRequest request) {
-        return TEMP_APP_URL;
+//        return TEMP_APP_URL;
+        return "http://localhost:3000" +
+
 
 //        return "http://"+request.getServerName() +
 //                ":" +
 //                request.getServerPort() +
-//                request.getContextPath();
-
+                request.getContextPath();
     }
 
 }

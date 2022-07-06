@@ -24,4 +24,3 @@ spring:
             enable: true
 
   FLW_SECRET_KEY: ${FLW_SECRET_KEY}
-  TEMP_APP_URL: https://localhost:3000/verifyRegistration?token

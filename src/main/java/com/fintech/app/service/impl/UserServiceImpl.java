@@ -190,45 +190,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return response;
     }
 
-//    @Override
-//    public BaseResponse<TransactionHistoryResponse> getTransactionHistory(Integer page, Integer size, String sortBy) {
-//
-//        if (page == null) page = 0;
-//        if (size == null) size = 10;
-//        if (sortBy == null) sortBy = "createdAt";
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-//
-//        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findUserByEmail(userEmail);
-//        Wallet wallet = walletRepository.findWalletByUser(user);
-//        String userAccountNumber = wallet.getAccountNumber();
-//        Page<Transfer> transfers = transferRepository
-//                .findAllBySenderAccountNumberOrDestinationAccountNumber(userAccountNumber, userAccountNumber, pageable);
-//        List<TransactionHistoryDto> userHistory = new ArrayList<>();
-//
-//        for (var transfer : transfers) {
-//            TransactionHistoryDto response = mapTransferToTransactionHistoryDto(userAccountNumber,transfer);
-//            userHistory.add(response);
-//        }
-//        TransactionHistoryResponse response = TransactionHistoryResponse.builder()
-//                                                .content(userHistory)
-//                                                .page(pageable)
-//                                                .build();
-//        return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
-//    }
-//
-//    private TransactionHistoryDto mapTransferToTransactionHistoryDto(String userAccountNumber, Transfer transfer) {
-//        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
-//        boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
-//        String amount = String.format("%.2f",transfer.getAmount());
-//        TransactionHistoryDto response = TransactionHistoryDto.builder()
-//                .id(transfer.getId())
-//                .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
-//                .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
-//                .type(transfer.getType())
-//                .transactionTime(dateFormat.format(transfer.getCreatedAt()))
-//                .amount(isSender ? "-" + amount : "+" + amount)
-//                .build();
-//        return response;
-//    }
 }
