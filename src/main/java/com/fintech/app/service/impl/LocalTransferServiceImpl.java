@@ -38,8 +38,11 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (userEmail.equals("anonymousUser")) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
+        }
+
+        User user = userRepository.findUserByEmail(userEmail);
 
         Wallet recipientWallet = walletRepository.findWalletByAccountNumber(transferRequest.getAccountNumber());
         if (recipientWallet == null) {
@@ -48,6 +51,8 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         User recipient = recipientWallet.getUser();
         if (recipient == null) {
             return new BaseResponse<>(HttpStatus.NOT_FOUND, "Recipient not found", null);
+        } else  if (user == recipient) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Fraudulent action, can't transfer to self", null);
         }
 
         Wallet userWallet = walletRepository.findWalletByUser(user);
