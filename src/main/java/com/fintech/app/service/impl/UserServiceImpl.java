@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final TransferRepository transferRepository;
 
 
-//    @Transactional
+    //    @Transactional
     @Override
     public BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException {
 
@@ -93,10 +93,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public BaseResponse<UserResponse> getUser() {
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user= userRepository.findUserByEmail(loggedInEmail);
-        if (user == null) {
-            return new BaseResponse<>(HttpStatus.NOT_FOUND, "No user logged in", null);
+        if (loggedInEmail.equals("anonymousUser")) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
         }
+        User user= userRepository.findUserByEmail(loggedInEmail);
+
         UserResponse userResponse = utility.userToResponse(user);
         return new BaseResponse<>(HttpStatus.OK, "user profile", userResponse);
     }
@@ -149,6 +150,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        if (userEmail.equals("anonymousUser")) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
+        }
+
         User user = userRepository.findUserByEmail(userEmail);
 
         Wallet wallet = walletRepository.findWalletByUser(user);
@@ -166,9 +171,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
-                                                .content(userHistory)
-                                                .page(pageable)
-                                                .build();
+                .content(userHistory)
+                .page(pageable)
+                .build();
 
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
     }

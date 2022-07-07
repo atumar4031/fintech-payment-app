@@ -27,8 +27,8 @@ public class WalletServiceImpl implements WalletService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
 
-//    @Value("${FLW_SECRET_KEY}")
-    private final String AUTHORIZATION = "FLWSECK-6cca3c5c045ba55aec5811d6a0902b59-X";
+    @Value("${FLW_SECRET_KEY}")
+    private String AUTHORIZATION;
 
     @Override
     public Wallet createWallet(FlwWalletRequest walletRequest) throws JSONException {
