@@ -4,7 +4,6 @@ import com.fintech.app.request.LoginRequest;
 import com.fintech.app.request.PasswordRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.JwtAuthResponse;
-import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
 

@@ -3,7 +3,6 @@ package com.fintech.app.security;
 import com.fintech.app.service.BlacklistService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

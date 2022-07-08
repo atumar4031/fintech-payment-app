@@ -48,6 +48,7 @@ public class WalletServiceImpl implements WalletService {
                 request,
                 FlwVirtualAccountResponse.class).getBody();
 
+        assert body != null;
         return Wallet.builder()
                 .accountNumber(body.getData().getAccountNumber())
                 .balance(Double.parseDouble(body.getData().getAmount()))

@@ -1,10 +1,8 @@
 package com.fintech.app.service.impl;
 
-import com.fintech.app.model.LocalTransfer;
 import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
-import com.fintech.app.repository.LocalTransferRepository;
 import com.fintech.app.repository.TransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
@@ -14,12 +12,10 @@ import com.fintech.app.service.LocalTransferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
 import java.util.UUID;
 
 

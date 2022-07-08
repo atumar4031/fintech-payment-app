@@ -12,7 +12,13 @@ import java.util.List;
 @Builder
 public class TransactionHistoryResponse {
 
-    List<TransactionHistoryDto> content;
-    Pageable page;
+    private List<TransactionHistoryDto> content;
+    private Pageable page;
+    private int currentPage;
+    private int numberOfElements;
+    private int totalPages;
+    private Long totalElements;
+    private boolean first;
+    private boolean last;
 
 }

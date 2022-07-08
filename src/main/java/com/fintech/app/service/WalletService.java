@@ -1,6 +1,5 @@
 package com.fintech.app.service;
 
-import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
 import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.response.BaseResponse;

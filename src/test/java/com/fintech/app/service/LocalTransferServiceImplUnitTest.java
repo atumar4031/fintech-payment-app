@@ -1,6 +1,5 @@
 package com.fintech.app.service;
 
-import com.fintech.app.model.LocalTransfer;
 import com.fintech.app.model.Transfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
@@ -24,7 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

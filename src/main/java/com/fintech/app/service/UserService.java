@@ -6,7 +6,6 @@ import com.fintech.app.request.UserRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
-import com.fintech.app.response.WalletResponse;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import javax.servlet.http.HttpServletRequest;

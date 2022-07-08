@@ -5,14 +5,10 @@ import com.fintech.app.request.PasswordRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.JwtAuthResponse;
 import com.fintech.app.service.LoginService;
-import com.fintech.app.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1")
