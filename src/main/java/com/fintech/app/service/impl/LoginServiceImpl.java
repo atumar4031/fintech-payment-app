@@ -14,24 +14,18 @@ import com.fintech.app.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +36,6 @@ public class LoginServiceImpl implements LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final HttpServletResponse httpServletResponse;
     private final BlacklistService blacklistService;
-    private final BlacklistedTokenRepository blackListedTokenRepository;
     private final HttpServletRequest httpServletRequest;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -96,8 +89,6 @@ public class LoginServiceImpl implements LoginService {
         if (user == null) {
             return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged In", null);
         }
-//        User user = userRepository.findByEmail(loggedInUsername)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         boolean matchPasswordWithOldPassword = passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword());
 

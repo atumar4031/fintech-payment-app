@@ -82,7 +82,9 @@ class TransactionHistoryUnitTest {
         when(transferRepository.findAllBySenderAccountNumberOrDestinationAccountNumber(any(),
                 any(), any())).thenReturn(historyPage);
 
-        Assertions.assertThat(userService.getTransactionHistory(null, null, null).getResult().getContent().get(0).getAmount()).isEqualTo("-3000.00");
+        String amount = String.format("\u20a6%,.2f",transfer.getAmount());
+
+        Assertions.assertThat(userService.getTransactionHistory(null, null, null).getResult().getContent().get(0).getAmount()).isEqualTo("- "+amount);
 
     }
 }

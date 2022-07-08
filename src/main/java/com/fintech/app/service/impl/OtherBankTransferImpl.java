@@ -68,6 +68,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
                 request,
                 FlwBankResponse.class).getBody();
 
+        assert flwBankResponse != null;
         return flwBankResponse.getData();
     }
 

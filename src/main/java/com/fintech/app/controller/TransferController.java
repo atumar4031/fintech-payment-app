@@ -1,16 +1,16 @@
 package com.fintech.app.controller;
 
+import com.fintech.app.model.FlwBank;
 import com.fintech.app.model.Transfer;
+import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.request.LocalTransferRequest;
+import com.fintech.app.request.TransferRequest;
 import com.fintech.app.response.BaseResponse;
+import com.fintech.app.response.FlwAccountResponse;
+import com.fintech.app.response.OtherBankTransferResponse;
 import com.fintech.app.service.LocalTransferService;
 import com.fintech.app.service.OtherBankTransferService;
-import com.fintech.app.request.TransferRequest;
-import com.fintech.app.response.FlwAccountResponse;
-import com.fintech.app.model.FlwBank;
-import com.fintech.app.request.FlwAccountRequest;
-import com.fintech.app.response.OtherBankTransferResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,13 +18,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/transfers")
+@RequiredArgsConstructor
 public class TransferController {
 
-    @Autowired
-    private OtherBankTransferService otherBankTransferService;
+    private final OtherBankTransferService otherBankTransferService;
 
-    @Autowired
-    private  LocalTransferService localTransferService;
+    private final LocalTransferService localTransferService;
 
     @PostMapping("/local")
     public BaseResponse<Transfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){

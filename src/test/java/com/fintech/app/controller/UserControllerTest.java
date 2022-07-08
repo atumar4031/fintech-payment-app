@@ -72,7 +72,7 @@ class UserControllerTest {
     @Test
     void createUserAccount() throws Exception {
         when(userService.createUserAccount(userRequest, request))
-                .thenReturn(new BaseResponse<UserResponse>(
+                .thenReturn(new BaseResponse<>(
                         HttpStatus.CREATED,
                         "Registration success",
                         userResponse));

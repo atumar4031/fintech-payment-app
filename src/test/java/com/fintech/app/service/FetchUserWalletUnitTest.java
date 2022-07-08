@@ -1,15 +1,11 @@
 package com.fintech.app.service;
 
-import com.fintech.app.model.LocalTransfer;
 import com.fintech.app.model.User;
 import com.fintech.app.model.Wallet;
-import com.fintech.app.repository.LocalTransferRepository;
 import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.WalletResponse;
-import com.fintech.app.service.impl.LocalTransferServiceImpl;
-import com.fintech.app.service.impl.UserServiceImpl;
 import com.fintech.app.service.impl.WalletServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
@@ -23,9 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

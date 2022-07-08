@@ -1,7 +1,5 @@
 package com.fintech.app.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fintech.app.controller.LoginController;
 import com.fintech.app.model.BlacklistedToken;
 import com.fintech.app.model.User;
 import com.fintech.app.repository.BlacklistedTokenRepository;
@@ -12,7 +10,6 @@ import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.JwtAuthResponse;
 import com.fintech.app.security.CustomUserDetailsService;
 import com.fintech.app.security.JwtTokenProvider;
-import com.fintech.app.service.BlacklistService;
 import com.fintech.app.service.impl.LoginServiceImpl;
 import com.fintech.app.service.impl.UserServiceImpl;
 import org.assertj.core.api.Assertions;
@@ -23,37 +20,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Collections;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
