@@ -33,10 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -134,6 +131,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public VerificationToken generateNewToken(String oldToken) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(oldToken);
         verificationToken.setToken(UUID.randomUUID().toString());
+        Date currentDate = new Date();
+        Date expirationDate = new Date(currentDate.getTime() + 900000);
+        verificationToken.setExpirationTime(expirationDate);
         verificationTokenRepository.save(verificationToken);
         return verificationToken;
     }
@@ -173,6 +173,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         TransactionHistoryResponse response = TransactionHistoryResponse.builder()
                 .content(userHistory)
                 .page(pageable)
+                .first(transfers.isFirst())
+                .last(transfers.isLast())
+                .currentPage(page + 1)
+                .totalElements(transfers.getTotalElements())
+                .totalPages(transfers.getTotalPages())
+                .numberOfElements(transfers.getNumberOfElements())
                 .build();
 
         return new BaseResponse<>(HttpStatus.OK, "Transaction History retrieved", response);
@@ -182,14 +188,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
         boolean isSender = userAccountNumber.equals(transfer.getSenderAccountNumber());
-        String amount = String.format("%.2f",transfer.getAmount());
+        String amount = String.format("\u20a6%,.2f",transfer.getAmount());
         TransactionHistoryDto response = TransactionHistoryDto.builder()
                 .id(transfer.getId())
                 .name(isSender ? transfer.getDestinationFullName() : transfer.getSenderFullName())
                 .bank(isSender ? transfer.getDestinationBank() : transfer.getSenderBankName())
                 .type(transfer.getType())
                 .transactionTime(dateFormat.format(transfer.getCreatedAt()))
-                .amount(isSender ? "-" + amount : "+" + amount)
+                .amount(isSender ? "- " + amount : "+ " + amount)
                 .build();
 
         return response;

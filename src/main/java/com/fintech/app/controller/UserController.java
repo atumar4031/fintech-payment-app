@@ -35,26 +35,24 @@ public class UserController {
     }
 
     @GetMapping("/verifyRegistration")
-    public BaseResponse validateRegistrationToken(@RequestParam("token") String token){
+    public BaseResponse<?> validateRegistrationToken(@RequestParam("token") String token){
         boolean isValid = userService.validateRegistrationToken(token);
         return isValid ? new BaseResponse<>(HttpStatus.OK, "User verified successfully", null)
                 : new BaseResponse<>(HttpStatus.BAD_REQUEST, "User verification failed", null);
     }
 
     @GetMapping("/resendVerificationToken")
-    public BaseResponse resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
+    public BaseResponse<?> resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
         VerificationToken verificationToken = userService.generateNewToken(oldToken);
         User user = verificationToken.getUser();
         utility.resendVerificationTokenMail(user, utility.applicationUrl(request), verificationToken);
-        return new BaseResponse(HttpStatus.OK, "verification link sent", null);
+        return new BaseResponse<>(HttpStatus.OK, "verification link sent", null);
     }
 
     @GetMapping()
-    public BaseResponse<UserResponse> getUser(){
+    public BaseResponse<UserResponse> getUserProfile(){
         return userService.getUser();
     }
-
-
 
 
     @GetMapping("/view-transaction-history")

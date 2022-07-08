@@ -10,6 +10,7 @@ import com.fintech.app.response.JwtAuthResponse;
 import com.fintech.app.security.JwtTokenProvider;
 import com.fintech.app.service.BlacklistService;
 import com.fintech.app.service.LoginService;
+import com.fintech.app.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -132,20 +133,7 @@ public class LoginServiceImpl implements LoginService {
         String mailContent = "<p> Dear "+ user.getLastName() +", </p>";
         mailContent += "<p> Please click the link below to reset your password, </p>";
         mailContent += "<h3><a href=\""+ url + "\"> RESET PASSWORD </a></h3>";
-        mailContent += "<p>Best regards <br/> Fintech team </p>";
-        try{
-            // send message
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom("almustaphatukur00@gmail.com",senderName);
-            helper.setTo(user.getEmail());
-            helper.setSubject(subject);
-            helper.setText(mailContent, true);
-            mailSender.send(message);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        Util.sendMail(user, subject, senderName, mailContent, mailSender);
     }
 
     @Override

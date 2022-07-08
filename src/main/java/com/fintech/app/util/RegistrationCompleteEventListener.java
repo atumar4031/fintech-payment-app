@@ -43,19 +43,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         mailContent += "<p> Please click the link below to verify your registration, </p>";
         mailContent += "<h3><a href=\""+ url + "\"> VERIFY </a></h3>";
         mailContent += "<p>Thank you <br/> Fintech team </p>";
-        try{
-            // send message
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom("almustaphatukur00@gmail.com",senderName);
-            helper.setTo(user.getEmail());
-            helper.setSubject(subject);
-            helper.setText(mailContent, true);
-            mailSender.send(message);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        Util.setMailCredentials(user, subject, senderName, mailContent, mailSender);
 
     }
 }
