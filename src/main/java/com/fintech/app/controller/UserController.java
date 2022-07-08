@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 @RestController
 @Slf4j
@@ -56,9 +57,9 @@ public class UserController {
 
     @GetMapping("/view-transaction-history")
     public BaseResponse<TransactionHistoryResponse> fetchTransactionHistory
-            (@RequestParam("page") Integer page,
-             @RequestParam("size") Integer size,
-             @RequestParam("sortBy") String sortBy) {
+            (@PathParam("page") Integer page,
+             @PathParam("size") Integer size,
+             @PathParam("sortBy") String sortBy) {
 
         return userService.getTransactionHistory(page, size, sortBy);
     }
