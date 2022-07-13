@@ -13,7 +13,7 @@ public class WalletResponse {
     Long walletId;
     String accountNumber;
     String bankName;
-    Double balance;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    String balance;
+    String createdAt;
+    String updatedAt;
 }
