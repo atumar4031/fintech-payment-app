@@ -179,6 +179,23 @@ public class VerifyTransferRequest {
             this.customer = customer;
         }
 
+        @Override
+        public String toString() {
+            return "Data{" +
+                    "id='" + id + '\'' +
+                    ", txRef='" + txRef + '\'' +
+                    ", flwRef='" + flwRef + '\'' +
+                    ", amount='" + amount + '\'' +
+                    ", currency='" + currency + '\'' +
+                    ", chargedAmount='" + chargedAmount + '\'' +
+                    ", appFee='" + appFee + '\'' +
+                    ", merchantFee='" + merchantFee + '\'' +
+                    ", narration='" + narration + '\'' +
+                    ", status='" + status + '\'' +
+                    ", paymentType='" + paymentType + '\'' +
+                    ", customer=" + customer +
+                    '}';
+        }
     }
 
     public static class Customer {
