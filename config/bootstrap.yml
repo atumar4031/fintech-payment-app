@@ -25,4 +25,5 @@ spring:
 
   FLW_SECRET_KEY: ${FLW_SECRET_KEY}
 
-  callback_url: https://mentorship-payment-app.herokuapp.com/transfers/verify
+
+callback_url: https://mentorship-payment-app.herokuapp.com/transfers/verify
