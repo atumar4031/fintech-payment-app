@@ -5,9 +5,11 @@ import com.fintech.app.model.Transfer;
 import com.fintech.app.request.FlwAccountRequest;
 import com.fintech.app.request.LocalTransferRequest;
 import com.fintech.app.request.TransferRequest;
+import com.fintech.app.request.VerifyTransferRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwAccountResponse;
 import com.fintech.app.response.OtherBankTransferResponse;
+import com.fintech.app.response.VerifyTransferResponse;
 import com.fintech.app.service.LocalTransferService;
 import com.fintech.app.service.OtherBankTransferService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,11 @@ public class TransferController {
     @PostMapping("/otherBank")
     public BaseResponse<OtherBankTransferResponse> processTransfer(@Valid @RequestBody TransferRequest transferRequest){
         return otherBankTransferService.initiateOtherBankTransfer(transferRequest);
+    }
+
+    @PostMapping("/verify")
+    public BaseResponse<VerifyTransferResponse> verifyTransactions(@RequestBody VerifyTransferRequest verifyTransferRequest){
+        return otherBankTransferService.verifyTransaction(verifyTransferRequest);
     }
 
 }

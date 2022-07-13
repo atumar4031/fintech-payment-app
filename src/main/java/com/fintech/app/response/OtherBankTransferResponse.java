@@ -49,7 +49,7 @@ public class OtherBankTransferResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    static class Data {
+    public static class Data {
         private  Long id;
         @JsonProperty("account_number")
         private String  accountNumber;

@@ -28,7 +28,7 @@ public class Transfer {
     private String status;
     private String clientRef;
 
-    private String flwRef;
+    private Long flwRef;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL,

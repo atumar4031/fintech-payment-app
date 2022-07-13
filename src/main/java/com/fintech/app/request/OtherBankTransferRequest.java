@@ -20,6 +20,9 @@ public class OtherBankTransferRequest {
     private String currency;
     private String reference;
 
+    @JsonProperty("callback_url")
+    private String callbackUrl;
+
     @JsonProperty("debit_currency")
     private String  debitCurrency;
 

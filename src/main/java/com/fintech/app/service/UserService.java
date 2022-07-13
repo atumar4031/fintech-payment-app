@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface UserService {
 
     BaseResponse<UserResponse> createUserAccount(UserRequest userRequest, HttpServletRequest request) throws JSONException;
-
     BaseResponse<UserResponse> getUser();
     void saveVerificationTokenForUser(String token, User user);
     Boolean validateRegistrationToken(String token);

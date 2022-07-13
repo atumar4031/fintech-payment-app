@@ -8,14 +8,13 @@ import com.fintech.app.repository.UserRepository;
 import com.fintech.app.repository.WalletRepository;
 import com.fintech.app.request.OtherBankTransferRequest;
 import com.fintech.app.request.TransferRequest;
-import com.fintech.app.response.BaseResponse;
-import com.fintech.app.response.FlwAccountResponse;
+import com.fintech.app.request.VerifyTransferRequest;
+import com.fintech.app.response.*;
 import com.fintech.app.model.FlwBank;
 import com.fintech.app.request.FlwAccountRequest;
-import com.fintech.app.response.FlwBankResponse;
-import com.fintech.app.response.OtherBankTransferResponse;
 import com.fintech.app.service.OtherBankTransferService;
 import com.fintech.app.util.Constant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class OtherBankTransferImpl implements OtherBankTransferService {
 
     private final UserRepository userRepository;
@@ -40,6 +40,9 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
     @Value("${FLW_SECRET_KEY}")
     private String AUTHORIZATION;
+
+    @Value("${callback_url}")
+    private String callbackUrl;
 
     @Autowired
     public OtherBankTransferImpl(UserRepository userRepository,
@@ -93,6 +96,13 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
 
     @Override
+    public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
+        log.info(verifyTransferRequest.toString());
+        return null;
+    }
+
+
+    @Override
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
         OtherBankTransferResponse response = new OtherBankTransferResponse();
         try{
@@ -107,6 +117,8 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
            Transfer transfer = saveTransactions(user, transferRequest);
            //call API
            response = otherBankTransfer(transferRequest, transfer.getClientRef());
+           transfer.setFlwRef(response.getData().getId());
+           transferRepository.save(transfer);
 
        }catch (RuntimeException runtimeException){
            runtimeException.printStackTrace();
@@ -142,6 +154,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
                 .accountNumber(transferRequest.getAccountNumber())
                 .amount(transferRequest.getAmount())
                 .currency("NGN")
+                .callbackUrl(callbackUrl)
                 .narration(transferRequest.getNarration())
                 .reference(clientRef)
                 .debitCurrency("NGN")
@@ -159,6 +172,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
                 HttpMethod.POST,
                 request,
                 OtherBankTransferResponse.class).getBody();
+
         return response;
     }
 
@@ -173,7 +187,6 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
         Transfer transfer = Transfer.builder()
                 .amount(transferRequest.getAmount())
                 .clientRef(clientReference)
-                .flwRef(clientReference)
                 .type("OTHER")
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)
