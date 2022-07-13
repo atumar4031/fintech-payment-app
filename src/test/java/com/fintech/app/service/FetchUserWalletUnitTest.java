@@ -20,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -51,6 +54,8 @@ class FetchUserWalletUnitTest {
                 .accountNumber("0012345678")
                 .user(user)
                 .bankName("Access")
+                .createdAt(LocalDateTime.now())
+                .modifyAt(LocalDateTime.now())
                 .build();
     }
 
@@ -63,7 +68,7 @@ class FetchUserWalletUnitTest {
         when(authentication.getName()).thenReturn(user.getEmail());
         given(userRepository.findUserByEmail(any())).willReturn(user);
         when(walletRepository.findWalletByUser(any())).thenReturn(wallet);
-
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
         BaseResponse<WalletResponse> response = walletService.fetchUserWallet();
 
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);

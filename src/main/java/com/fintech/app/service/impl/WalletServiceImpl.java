@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 @RequiredArgsConstructor
 @Service
@@ -64,13 +65,14 @@ public class WalletServiceImpl implements WalletService {
             return new BaseResponse<>(HttpStatus.NOT_FOUND, "User not found", null);
         }
         Wallet wallet = walletRepository.findWalletByUser(user);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("E, dd-MMMM-yyyy HH:mm");
         WalletResponse response = WalletResponse.builder()
                 .walletId(wallet.getId())
                 .accountNumber(wallet.getAccountNumber())
-                .balance(wallet.getBalance())
+                .balance(String.format("\u20a6%,.2f",wallet.getBalance()))
                 .bankName(wallet.getBankName())
-                .createdAt(wallet.getCreatedAt())
-                .updatedAt(wallet.getModifyAt())
+                .createdAt(dateFormat.format(wallet.getCreatedAt()))
+                .updatedAt(dateFormat.format(wallet.getModifyAt()))
                 .build();
         return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
     }
