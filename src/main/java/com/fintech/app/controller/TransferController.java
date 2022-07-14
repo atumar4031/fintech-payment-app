@@ -13,6 +13,7 @@ import com.fintech.app.response.VerifyTransferResponse;
 import com.fintech.app.service.LocalTransferService;
 import com.fintech.app.service.OtherBankTransferService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,12 +30,20 @@ public class TransferController {
 
     @PostMapping("/local")
     public BaseResponse<Transfer> makeLocalTransfer(@RequestBody LocalTransferRequest localTransferRequest){
-
-        return localTransferService.makeLocalTransfer(localTransferRequest);
+        try {
+            return localTransferService.makeLocalTransfer(localTransferRequest);
+        }catch (Exception e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
+
     @GetMapping("/resolveLocalAccount/{accountNumber}")
     public BaseResponse<String> resolveLocalAccount(@PathVariable String accountNumber){
-        return localTransferService.resolveLocalAccount(accountNumber);
+        try{
+            return localTransferService.resolveLocalAccount(accountNumber);
+        }catch (Exception e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 
     @GetMapping("/banks")
@@ -44,12 +53,20 @@ public class TransferController {
 
     @PostMapping("/resolveOtherBank")
     public BaseResponse<FlwAccountResponse> resolveOtherAccount(@RequestBody FlwAccountRequest flwAccountRequest){
-        return otherBankTransferService.resolveAccount(flwAccountRequest);
+        try{
+            return otherBankTransferService.resolveAccount(flwAccountRequest);
+        }catch (Exception e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 
     @PostMapping("/otherBank")
     public BaseResponse<OtherBankTransferResponse> processTransfer(@Valid @RequestBody TransferRequest transferRequest){
-        return otherBankTransferService.initiateOtherBankTransfer(transferRequest);
+        try {
+            return otherBankTransferService.initiateOtherBankTransfer(transferRequest);
+        }catch (Exception e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 
     @PostMapping("/verify")
