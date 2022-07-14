@@ -113,12 +113,15 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Invalid amount", null);
         if(!validateWalletBalance(transferRequest.getAmount(), user))
            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Insufficient balance", null);
+
+        String clientRef = UUID.randomUUID().toString();
+           //call API
+        OtherBankTransferResponse response = otherBankTransfer(transferRequest, clientRef);
         // save transfer
         Transfer transfer = saveTransactions(user, transferRequest);
-           //call API
-          OtherBankTransferResponse response = otherBankTransfer(transferRequest, transfer.getClientRef());
-           transfer.setFlwRef(response.getData().getId());
-           transferRepository.save(transfer);
+        transfer.setClientRef(clientRef);
+        transfer.setFlwRef(response.getData().getId());
+        transferRepository.save(transfer);
 
          return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
@@ -175,7 +178,6 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
 
-        String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user);
         int amount = transferRequest.getAmount().intValue();
         double balance = wallet.getBalance() - amount;
@@ -183,7 +185,6 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
         Transfer transfer = Transfer.builder()
                 .amount(transferRequest.getAmount())
-                .clientRef(clientReference)
                 .type("OTHER")
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)

@@ -31,7 +31,11 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<UserResponse> createUserAccount(@Valid @RequestBody UserRequest userRequest,
                                                         HttpServletRequest request) throws JSONException {
-        return userService.createUserAccount(userRequest, request);
+        try {
+            return userService.createUserAccount(userRequest, request);
+        } catch (Exception e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 
     @GetMapping("/verifyRegistration")

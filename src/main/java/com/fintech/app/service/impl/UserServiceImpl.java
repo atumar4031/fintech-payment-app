@@ -63,24 +63,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = utility.requestToUser(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setPin(passwordEncoder.encode(userRequest.getPin()));
-        User user1 = userRepository.save(user);
 
         // CREATE WALLET
         Wallet wallet = walletService.createWallet(FlwWalletRequest
                 .builder()
-                .email(user1.getEmail())
-                .bvn(user1.getBvn())
-                .firstname(user1.getFirstName())
-                .lastname(user1.getLastName())
-                .phonenumber(user1.getPhoneNumber())
+                .email(user.getEmail())
+                .bvn(user.getBvn())
+                .firstname(user.getFirstName())
+                .lastname(user.getLastName())
+                .phonenumber(user.getPhoneNumber())
                 .build());
-        wallet.setUser(user1);
+        wallet.setUser(user);
         wallet.setBalance(0.0);
+
+        userRepository.save(user);
+
         walletRepository.save(wallet);
 
         // CALL EMAIL SERVICE
         publisher.publishEvent(new RegistrationCompleteEvent(
-                user1,
+                user,
                 utility.applicationUrl(request)
         ));
         UserResponse userResponse = utility.userToResponse(user);
