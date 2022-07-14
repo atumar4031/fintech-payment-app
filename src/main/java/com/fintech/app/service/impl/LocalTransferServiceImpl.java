@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,8 +29,8 @@ public class LocalTransferServiceImpl implements LocalTransferService {
     private final PasswordEncoder passwordEncoder;
 
 
+    @Transactional
     @Override
-
     public BaseResponse<Transfer> makeLocalTransfer(LocalTransferRequest transferRequest) {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -56,13 +57,12 @@ public class LocalTransferServiceImpl implements LocalTransferService {
             return new BaseResponse<>(HttpStatus.NOT_FOUND, "Sender Wallet not found", null);
         }
 
-
         Double transferAmount = transferRequest.getAmount();
         Double userWalletBalance = userWallet.getBalance();
-        if (transferAmount < 0) {
+        if (transferAmount < 1) {
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Invalid transfer amount", null);
         }
-        if (transferAmount >= userWalletBalance) {
+        if (transferAmount > userWalletBalance) {
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Insufficient funds", null);
         }
 
@@ -112,8 +112,7 @@ public class LocalTransferServiceImpl implements LocalTransferService {
         Wallet wallet = walletRepository.findWalletByAccountNumber(accountNumber);
 
         if(wallet != null){
-            String accountName = wallet.getUser().getFirstName() + " "+
-                    wallet.getUser().getLastName();
+            String accountName = wallet.getUser().getFirstName() + " "+ wallet.getUser().getLastName();
             return new BaseResponse<>(HttpStatus.OK, "account retrieved",accountName);
         } else {
             return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Account not found", null);

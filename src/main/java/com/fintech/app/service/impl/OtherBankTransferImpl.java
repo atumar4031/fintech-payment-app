@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -95,6 +96,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     }
 
 
+    @Transactional
     @Override
     public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
         log.info(verifyTransferRequest.toString());
@@ -104,25 +106,23 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
     @Override
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
-        OtherBankTransferResponse response = new OtherBankTransferResponse();
-        try{
-           User user = retrieveUserDetails();
-           if(!validatePin(transferRequest.getPin(), user))
-               new BaseResponse<>(HttpStatus.BAD_REQUEST, "Pin error", "invalid pin");
-           if(!validateRequestBalance(transferRequest.getAmount()))
-               new BaseResponse<>(HttpStatus.BAD_REQUEST, "amount error", "invalid amount");
-           if(!validateWalletBalance(transferRequest.getAmount(), user))
-               new BaseResponse<>(HttpStatus.BAD_REQUEST, "balance error", "insufficient balance");
-           // save transfer
-           Transfer transfer = saveTransactions(user, transferRequest);
-           //call API
-           response = otherBankTransfer(transferRequest, transfer.getClientRef());
-           transfer.setFlwRef(response.getData().getId());
-           transferRepository.save(transfer);
+        User user = retrieveUserDetails();
+        if(!validatePin(transferRequest.getPin(), user))
+           return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Incorrect pin", null);
+        if(!validateRequestBalance(transferRequest.getAmount()))
+           return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Invalid amount", null);
+        if(!validateWalletBalance(transferRequest.getAmount(), user))
+           return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Insufficient balance", null);
 
-       }catch (RuntimeException runtimeException){
-           runtimeException.printStackTrace();
-       }
+        String clientRef = UUID.randomUUID().toString();
+           //call API
+        OtherBankTransferResponse response = otherBankTransfer(transferRequest, clientRef);
+        // save transfer
+        Transfer transfer = saveTransactions(user, transferRequest);
+        transfer.setClientRef(clientRef);
+        transfer.setFlwRef(response.getData().getId());
+        transferRepository.save(transfer);
+
          return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
 
@@ -178,7 +178,6 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
     private Transfer saveTransactions(User user, TransferRequest transferRequest) {
 
-        String clientReference = UUID.randomUUID().toString();
         Wallet wallet = walletRepository.findWalletByUser(user);
         int amount = transferRequest.getAmount().intValue();
         double balance = wallet.getBalance() - amount;
@@ -186,7 +185,6 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
         Transfer transfer = Transfer.builder()
                 .amount(transferRequest.getAmount())
-                .clientRef(clientReference)
                 .type("OTHER")
                 .narration(transferRequest.getNarration())
                 .status(Constant.STATUS)
