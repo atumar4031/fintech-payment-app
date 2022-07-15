@@ -101,15 +101,15 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
                 log.info(verifyTransferRequest.toString());
 
-//        Long flwRef = verifyTransferRequest.getData().getId();
-//        Transfer transfer = transferRepository.findByFlwRef(flwRef)
-//                .orElse(null);
-//
-//        if(transfer != null){
-//            String status = verifyTransferRequest.getData().getStatus();
-//            transfer.setStatus(status);
-//            transferRepository.save(transfer);
-//        }
+        Long flwRef = verifyTransferRequest.getData().getId();
+        Transfer transfer = transferRepository.findByFlwRef(flwRef)
+                .orElse(null);
+
+        if(transfer != null){
+            String status = verifyTransferRequest.getData().getStatus();
+            transfer.setStatus(status);
+            transferRepository.save(transfer);
+        }
         return new BaseResponse<>(HttpStatus.OK,"verify successfully",null);
     }
 

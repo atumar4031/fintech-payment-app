@@ -23,7 +23,7 @@ spring:
           starttls:
             enable: true
 
-  FLW_SECRET_KEY: ${FLW_SECRET_KEY}
+FLW_SECRET_KEY: ${FLW_SECRET_KEY}
 
 
 callback_url: https://mentorship-payment-app.herokuapp.com/api/v1/transfers/verify

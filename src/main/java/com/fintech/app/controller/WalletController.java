@@ -1,12 +1,12 @@
 package com.fintech.app.controller;
 
+import com.fintech.app.request.FundWalletRequest;
 import com.fintech.app.response.BaseResponse;
+import com.fintech.app.response.FundWalletResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.WalletService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,4 +18,9 @@ public class WalletController {
     public BaseResponse<WalletResponse> fetchUserWallet() {
         return walletService.fetchUserWallet();
     }
+
+//    @PostMapping("fund")
+//    public BaseResponse<FundWalletResponse> fundWallet(@RequestBody FundWalletRequest request) {
+//        return walletService.fundWallet(request);
+//    }
 }

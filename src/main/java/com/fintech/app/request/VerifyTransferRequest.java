@@ -182,7 +182,7 @@ public class VerifyTransferRequest {
         @Override
         public String toString() {
             return "Data{" +
-                    "id='" + id + '\'' +
+                    "id=" + id +
                     ", txRef='" + txRef + '\'' +
                     ", flwRef='" + flwRef + '\'' +
                     ", amount='" + amount + '\'' +
