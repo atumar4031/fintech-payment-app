@@ -99,7 +99,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     @Transactional
     @Override
     public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
-        Long flwRef = Long.parseLong(verifyTransferRequest.getData().getId());
+        Long flwRef = verifyTransferRequest.getData().getId();
         Transfer transfer = transferRepository.findByFlwRef(flwRef)
                 .orElse(null);
 
