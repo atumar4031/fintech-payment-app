@@ -27,6 +27,8 @@ public class Wallet {
 
     private String bankName;
 
+    private String txRef;
+
     @NotEmpty
     @Size(min = 10, message = "Account should have at least 10 number")
     private String accountNumber;

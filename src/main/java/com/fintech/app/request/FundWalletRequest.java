@@ -28,7 +28,9 @@ public class FundWalletRequest {
     @ToString
     public static class Data {
         private Long id;
-        private String tx_ref;
+
+        @JsonProperty("tx_ref")
+        private String txRef;
         private Long flw_ref;
         private String device_fingerPrint;
         private int amount;

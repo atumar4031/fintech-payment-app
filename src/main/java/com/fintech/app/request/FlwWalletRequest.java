@@ -16,7 +16,7 @@ public class FlwWalletRequest {
     private String firstname;
     private String lastname;
     private String bvn;
-    private String tx_ref;
+    private String txRef;
     private String phonenumber;
     private String narration;
     @JsonProperty(value = "is_permanent")

@@ -8,6 +8,7 @@ import com.fintech.app.response.TransactionHistoryResponse;
 import com.fintech.app.response.UserResponse;
 import com.fintech.app.service.UserService;
 import com.fintech.app.util.Util;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
+import java.io.IOException;
 
 @RestController
 @Slf4j
@@ -63,9 +65,14 @@ public class UserController {
     public BaseResponse<TransactionHistoryResponse> fetchTransactionHistory
             (@PathParam("page") Integer page,
              @PathParam("size") Integer size,
-             @PathParam("sortBy") String sortBy) {
-
-        return userService.getTransactionHistory(page, size, sortBy);
+             @PathParam("sortBy") String sortBy) throws ExpiredJwtException {
+        try {
+            var response = userService.getTransactionHistory(page, size, sortBy);
+            System.out.println("Ddddddddddddddddddddddddddddddddd");
+            return response;
+        } catch (ExpiredJwtException | IOException e) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+        }
     }
 
 

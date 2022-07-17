@@ -99,7 +99,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     @Transactional
     @Override
     public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
-                log.info(verifyTransferRequest.toString());
+        log.info(verifyTransferRequest.toString());
 
         Long flwRef = verifyTransferRequest.getData().getId();
         Transfer transfer = transferRepository.findByFlwRef(flwRef)
@@ -133,7 +133,7 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
         transfer.setFlwRef(response.getData().getId());
         transferRepository.save(transfer);
 
-         return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
+        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
 
     private User retrieveUserDetails() {

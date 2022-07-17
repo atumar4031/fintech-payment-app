@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
     Wallet findWalletByUser(User user);
     Wallet findWalletByAccountNumber(String accountNumber);
-//    Wallet findWalletByTx_ref(String tx_ref);
+    Wallet findWalletByTxRef(String txRef);
 
 
 }

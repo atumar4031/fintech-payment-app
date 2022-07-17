@@ -8,7 +8,6 @@ import com.fintech.app.request.FlwWalletRequest;
 import com.fintech.app.request.FundWalletRequest;
 import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.FlwVirtualAccountResponse;
-import com.fintech.app.response.FundWalletResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.WalletService;
 import com.fintech.app.util.Constant;
@@ -19,6 +18,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -61,6 +61,7 @@ public class WalletServiceImpl implements WalletService {
                 .accountNumber(body.getData().getAccountNumber())
                 .balance(Double.parseDouble(body.getData().getAmount()))
                 .bankName(body.getData().getBankName())
+                .txRef(payload.getTxRef())
                 .build();
     }
 
@@ -84,44 +85,72 @@ public class WalletServiceImpl implements WalletService {
         return new BaseResponse<>(HttpStatus.OK, "User wallet retrieved", response);
     }
 
-//    @Override
-//    public BaseResponse<FundWalletResponse> fundWallet(FundWalletRequest request) {
-//        if (transferRepository.findByFlwRef(request.getData().getId()).isEmpty()) {
-//            String tx_ref = request.getData().getTx_ref();
-//            Wallet wallet = walletRepository.findWalletByTx_ref(tx_ref);
-//            if(wallet == null) {
-//                return new BaseResponse<>(HttpStatus.NOT_FOUND, "wallet not found", null);
-//            }
-//            User user
-//            Transfer transfer = Transfer.builder()
-//                    .flwRef(request.getData().getId())
-//                    .destinationBank("FLUTTER_WAVE_WALLET")
-//
-//                    .senderFullName(request.getData().getCustomer().getName())
-//                    .amount((double)request.getData().getAmount())
-//                    .senderBankName(request.getData().getCard().getIssuer())
-//                    .type("WALLET_FUND")
-//                    .clientRef(UUID.randomUUID().toString())
-//                    .status(request.getData().getStatus().toUpperCase())
-//                    .senderAccountNumber("nil")
-//                    .createdAt(LocalDateTime.now())
-//                    .build();
-//        }
-//
-//        return null;
-//    }
+    @Transactional
+    @Override
+    public BaseResponse<?> fundWallet(FundWalletRequest request) {
+
+        log.info(request.toString());
+
+        Long flwRef = request.getData().getId();
+        String txStatus = request.getData().getStatus();
+        double txAmount = request.getData().getAmount();
+        String txRef = request.getData().getTxRef();
+
+        Wallet wallet = walletRepository.findWalletByTxRef(txRef);
+        if(wallet == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "wallet not found", null);
+        }
+
+        Transfer check = transferRepository.findByFlwRef(flwRef).orElse(null);
+        if (check != null) {
+            if (check.getStatus().equalsIgnoreCase("successful")) {
+                return new BaseResponse<>(HttpStatus.OK, "Wallet credited already", null);
+            }
+            check.setStatus(txStatus);
+            if (check.getStatus().equalsIgnoreCase("successful")){
+                wallet.setBalance(wallet.getBalance() + txAmount);
+                walletRepository.save(wallet);
+                return new BaseResponse<>(HttpStatus.OK, "Wallet with account_no " + wallet.getAccountNumber() + " credited with N" + txAmount, null);
+            }
+            return new BaseResponse<>(HttpStatus.EXPECTATION_FAILED, "wallet fund unsuccessful", null);
+        }
+
+        if (txStatus.equalsIgnoreCase("successful")) {
+            wallet.setBalance(wallet.getBalance() + txAmount);
+            walletRepository.save(wallet);
+        }
+        User user = wallet.getUser();
+        Transfer transfer = Transfer.builder()
+                .flwRef(request.getData().getId())
+                .amount(txAmount)
+                .status(txStatus)
+                .destinationBank(wallet.getBankName())
+                .destinationFullName(user.getFirstName() + user.getLastName())
+                .destinationAccountNumber(wallet.getAccountNumber())
+                .senderFullName(request.getData().getCustomer().getName())
+                .senderBankName(request.getData().getCard().getIssuer())
+                .senderAccountNumber("nil")
+                .type("WALLET_FUND")
+                .user(user)
+                .clientRef(UUID.randomUUID().toString())
+                .createdAt(LocalDateTime.now())
+                .build();
+        transferRepository.save(transfer);
+
+        return new BaseResponse<>(HttpStatus.OK, "Wallet with account_no " + wallet.getAccountNumber() + " credited with N" + txAmount, null);
+    }
 
     private FlwWalletRequest generatePayload(FlwWalletRequest walletRequest) throws JSONException {
-        FlwWalletRequest jsono = new FlwWalletRequest();
-        jsono.setEmail(walletRequest.getEmail());
-        jsono.set_permanent(true);
-        jsono.setBvn(walletRequest.getBvn());
-        jsono.setPhonenumber(walletRequest.getPhonenumber());
-        jsono.setFirstname(walletRequest.getFirstname());
-        jsono.setLastname(walletRequest.getLastname());
-        jsono.setTx_ref(UUID.randomUUID().toString());
-        jsono.setNarration("fintech");
+        FlwWalletRequest payload = new FlwWalletRequest();
+        payload.setEmail(walletRequest.getEmail());
+        payload.set_permanent(true);
+        payload.setBvn(walletRequest.getBvn());
+        payload.setPhonenumber(walletRequest.getPhonenumber());
+        payload.setFirstname(walletRequest.getFirstname());
+        payload.setLastname(walletRequest.getLastname());
+        payload.setTxRef(UUID.randomUUID().toString());
+        payload.setNarration("fintech");
 
-        return jsono;
+        return payload;
     }
 }
