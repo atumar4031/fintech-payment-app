@@ -111,7 +111,7 @@ public class LoginServiceImpl implements LoginService {
 
 
         String token = jwtTokenProvider.generatePasswordResetToken(email);
-        String url = "http://localhost:3000/api/v1/resetPassword?token=" + token;
+        String url = "http://localhost:3000/resetPassword?token=" + token;
 
         log.info("click here to reset your password: " + url);
         sendPasswordResetEmail(user, url);
