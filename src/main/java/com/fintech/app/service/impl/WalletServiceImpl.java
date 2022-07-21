@@ -106,36 +106,37 @@ public class WalletServiceImpl implements WalletService {
             if (check.getStatus().equalsIgnoreCase("successful")) {
                 return new BaseResponse<>(HttpStatus.OK, "Wallet credited already", null);
             }
-            check.setStatus(txStatus);
-            if (check.getStatus().equalsIgnoreCase("successful")){
-                wallet.setBalance(wallet.getBalance() + txAmount);
-                walletRepository.save(wallet);
-                return new BaseResponse<>(HttpStatus.OK, "Wallet with account_no " + wallet.getAccountNumber() + " credited with N" + txAmount, null);
-            }
-            return new BaseResponse<>(HttpStatus.EXPECTATION_FAILED, "wallet fund unsuccessful", null);
+//            check.setStatus(txStatus);
+//            if (check.getStatus().equalsIgnoreCase("successful")){
+//                wallet.setBalance(wallet.getBalance() + txAmount);
+//                walletRepository.save(wallet);
+//                return new BaseResponse<>(HttpStatus.OK, "Wallet with account_no " + wallet.getAccountNumber() + " credited with N" + txAmount, null);
+//            }
+//            return new BaseResponse<>(HttpStatus.EXPECTATION_FAILED, "wallet fund unsuccessful", null);
         }
 
         if (txStatus.equalsIgnoreCase("successful")) {
             wallet.setBalance(wallet.getBalance() + txAmount);
             walletRepository.save(wallet);
+            User user = wallet.getUser();
+            Transfer transfer = Transfer.builder()
+                    .flwRef(request.getData().getId())
+                    .amount(txAmount)
+                    .status(txStatus)
+                    .destinationBank(wallet.getBankName())
+                    .destinationFullName(user.getFirstName() + user.getLastName())
+                    .destinationAccountNumber(wallet.getAccountNumber())
+                    .senderFullName(request.getData().getCustomer().getName())
+                    .senderBankName(request.getData().getCard().getIssuer())
+                    .senderAccountNumber("nil")
+                    .type("WALLET_FUND")
+                    .user(user)
+                    .clientRef(UUID.randomUUID().toString())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            transferRepository.save(transfer);
         }
-        User user = wallet.getUser();
-        Transfer transfer = Transfer.builder()
-                .flwRef(request.getData().getId())
-                .amount(txAmount)
-                .status(txStatus)
-                .destinationBank(wallet.getBankName())
-                .destinationFullName(user.getFirstName() + user.getLastName())
-                .destinationAccountNumber(wallet.getAccountNumber())
-                .senderFullName(request.getData().getCustomer().getName())
-                .senderBankName(request.getData().getCard().getIssuer())
-                .senderAccountNumber("nil")
-                .type("WALLET_FUND")
-                .user(user)
-                .clientRef(UUID.randomUUID().toString())
-                .createdAt(LocalDateTime.now())
-                .build();
-        transferRepository.save(transfer);
+
 
         return new BaseResponse<>(HttpStatus.OK, "Wallet with account_no " + wallet.getAccountNumber() + " credited with N" + txAmount, null);
     }
