@@ -15,8 +15,8 @@ public class FundWalletRequest {
 
     private String event;
 
-    @JsonProperty("event.type")
-    private String event_type;
+//    @JsonProperty("event.type")
+//    private String event_type;
     
     private Data data;
 
@@ -31,7 +31,7 @@ public class FundWalletRequest {
 
         @JsonProperty("tx_ref")
         private String txRef;
-        private Long flw_ref;
+        private String flw_ref;
         private String device_fingerPrint;
         private int amount;
         private String currency;
