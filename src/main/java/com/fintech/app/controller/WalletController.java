@@ -5,9 +5,11 @@ import com.fintech.app.response.BaseResponse;
 import com.fintech.app.response.WalletResponse;
 import com.fintech.app.service.WalletService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/wallet")
@@ -19,12 +21,13 @@ public class WalletController {
         return walletService.fetchUserWallet();
     }
 
-    @PostMapping("fund")
+    @PostMapping("/fund")
     public BaseResponse<?> fundWallet(@RequestBody FundWalletRequest request) {
+        log.info(request.toString());
         try {
             return walletService.fundWallet(request);
         }catch (Exception e) {
-            return new BaseResponse<>(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
