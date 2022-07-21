@@ -127,7 +127,7 @@ public class WalletServiceImpl implements WalletService {
                     .destinationFullName(user.getFirstName() + user.getLastName())
                     .destinationAccountNumber(wallet.getAccountNumber())
                     .senderFullName(request.getData().getCustomer().getName())
-                    .senderBankName(request.getData().getCard().getIssuer())
+                    .senderBankName("WALLET FUND")
                     .senderAccountNumber("nil")
                     .type("WALLET_FUND")
                     .user(user)

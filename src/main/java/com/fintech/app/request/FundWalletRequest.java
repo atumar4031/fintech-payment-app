@@ -31,17 +31,18 @@ public class FundWalletRequest {
 
         @JsonProperty("tx_ref")
         private String txRef;
-        private String flw_ref;
-        private String device_fingerPrint;
+        @JsonProperty("flw_ref")
+        private String flwRef;
         private int amount;
         private String currency;
         private String narration;
         private String status;
-        private String payment_type;
+        @JsonProperty("payment_type")
+        private String paymentType;
         private LocalDateTime created_at;
-        private Long account_id;
+        @JsonProperty("account_id")
+        private Long accountId;
         private Customer customer;
-        private Card card;
     }
 
     @Getter
@@ -53,23 +54,10 @@ public class FundWalletRequest {
     public static class Customer {
         private Long id;
         private String name;
-        private String phone_number;
+        @JsonProperty("phone_number")
+        private String phoneNumber;
         private String email;
-        private LocalDateTime created_at;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    @ToString
-    public static class Card {
-        private String first_6digits;
-        private String last_4digits;
-        private String issuer;
-        private String country;
-        private String type;
-        private String expiry;
+        @JsonProperty("created_at")
+        private LocalDateTime createdAt;
     }
 }
