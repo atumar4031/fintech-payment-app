@@ -150,7 +150,7 @@ public class WalletServiceImpl implements WalletService {
         payload.setFirstname(walletRequest.getFirstname());
         payload.setLastname(walletRequest.getLastname());
         payload.setTxRef(UUID.randomUUID().toString());
-        payload.setNarration("fintech");
+        payload.setNarration(walletRequest.getFirstname() + " " + walletRequest.getLastname());
 
         return payload;
     }
