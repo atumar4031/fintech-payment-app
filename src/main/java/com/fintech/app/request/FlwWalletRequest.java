@@ -16,6 +16,7 @@ public class FlwWalletRequest {
     private String firstname;
     private String lastname;
     private String bvn;
+    @JsonProperty("tx_ref")
     private String txRef;
     private String phonenumber;
     private String narration;
