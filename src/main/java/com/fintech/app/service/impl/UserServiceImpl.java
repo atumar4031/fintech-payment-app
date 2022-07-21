@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (page == null) page = 0;
         if (size == null) size = 10;
-        if (sortBy == null) sortBy = "createdAt";
+        if (sortBy == null) sortBy = "id";
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
 
