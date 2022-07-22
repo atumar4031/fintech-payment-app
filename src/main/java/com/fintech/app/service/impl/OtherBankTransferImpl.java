@@ -127,6 +127,10 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
         String clientRef = UUID.randomUUID().toString();
            //call API
         OtherBankTransferResponse response = otherBankTransfer(transferRequest, clientRef);
+
+        if (!response.getStatus().equalsIgnoreCase("success")) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "An error occured", null);
+        }
         // save transfer
         Transfer transfer = saveTransactions(user, transferRequest);
         transfer.setClientRef(clientRef);

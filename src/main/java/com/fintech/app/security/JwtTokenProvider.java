@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     public String generateToken(Authentication authentication){
         String username = authentication.getName();
         User user = userRepository.findUserByEmail(username);
-        String name = user == null ? "" : user.getFirstName();
+        String name = user == null ? "" : user.getFirstName() + " " + user.getLastName();
         Date currentDate = new Date();
         long jwtExpirationInMillis = 30 * 60 * 1000;
         Date expirationDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
