@@ -129,20 +129,20 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public BaseResponse<String> resetPassword(PasswordRequest passwordRequest, String token) {
-        if (passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())) {
-            String email = jwtTokenProvider.getUsernameFromJwt(token);
-
-            User user = userRepository.findUserByEmail(email);
-
-            if (user == null) {
-                return new BaseResponse<>(HttpStatus.NOT_FOUND, "User with email " + email + " not found", null);
-            }
-
-            user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
-            userRepository.save(user);
-            return new BaseResponse<>(HttpStatus.OK,"Password Reset Successfully",null);
+        if (!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())) {
+            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Passwords don't match.", null);
         }
-        return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Passwords don't match.",null);
+        String email = jwtTokenProvider.getUsernameFromJwt(token);
+
+        User user = userRepository.findUserByEmail(email);
+
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.NOT_FOUND, "User with email " + email + " not found", null);
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+        userRepository.save(user);
+        return new BaseResponse<>(HttpStatus.OK,"Password Reset Successfully",null);
     }
 
 
