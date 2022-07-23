@@ -116,7 +116,13 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
 
     @Override
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
-        User user = retrieveUserDetails();
+//        User user = retrieveUserDetails();
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findUserByEmail(userEmail);
+        if (user == null) {
+            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "Not logged in", null);
+        }
         if(!validatePin(transferRequest.getPin(), user))
            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Incorrect pin", null);
         if(!validateRequestBalance(transferRequest.getAmount()))
