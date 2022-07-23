@@ -35,11 +35,10 @@ public class LocalTransferServiceImpl implements LocalTransferService {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if (userEmail.equals("anonymousUser")) {
+        User user = userRepository.findUserByEmail(userEmail);
+        if (user == null) {
             return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "User not logged in", null);
         }
-
-        User user = userRepository.findUserByEmail(userEmail);
 
         Wallet recipientWallet = walletRepository.findWalletByAccountNumber(transferRequest.getAccountNumber());
         if (recipientWallet == null) {
