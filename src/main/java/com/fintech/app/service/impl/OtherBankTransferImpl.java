@@ -99,30 +99,24 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
     @Transactional
     @Override
     public BaseResponse<VerifyTransferResponse> verifyTransaction(VerifyTransferRequest verifyTransferRequest) {
-        log.info(verifyTransferRequest.toString());
+                log.info(verifyTransferRequest.toString());
 
-        Long flwRef = verifyTransferRequest.getData().getId();
-        Transfer transfer = transferRepository.findByFlwRef(flwRef)
-                .orElse(null);
-
-        if(transfer != null){
-            String status = verifyTransferRequest.getData().getStatus();
-            transfer.setStatus(status);
-            transferRepository.save(transfer);
-        }
+//        Long flwRef = verifyTransferRequest.getData().getId();
+//        Transfer transfer = transferRepository.findByFlwRef(flwRef)
+//                .orElse(null);
+//
+//        if(transfer != null){
+//            String status = verifyTransferRequest.getData().getStatus();
+//            transfer.setStatus(status);
+//            transferRepository.save(transfer);
+//        }
         return new BaseResponse<>(HttpStatus.OK,"verify successfully",null);
     }
 
 
     @Override
     public BaseResponse<OtherBankTransferResponse> initiateOtherBankTransfer(TransferRequest transferRequest) {
-//        User user = retrieveUserDetails();
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        User user = userRepository.findUserByEmail(userEmail);
-        if (user == null) {
-            return new BaseResponse<>(HttpStatus.UNAUTHORIZED, "Not logged in", null);
-        }
+        User user = retrieveUserDetails();
         if(!validatePin(transferRequest.getPin(), user))
            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "Incorrect pin", null);
         if(!validateRequestBalance(transferRequest.getAmount()))
@@ -133,17 +127,13 @@ public class OtherBankTransferImpl implements OtherBankTransferService {
         String clientRef = UUID.randomUUID().toString();
            //call API
         OtherBankTransferResponse response = otherBankTransfer(transferRequest, clientRef);
-
-        if (!response.getStatus().equalsIgnoreCase("success")) {
-            return new BaseResponse<>(HttpStatus.BAD_REQUEST, "An error occured", null);
-        }
         // save transfer
         Transfer transfer = saveTransactions(user, transferRequest);
         transfer.setClientRef(clientRef);
         transfer.setFlwRef(response.getData().getId());
         transferRepository.save(transfer);
 
-        return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
+         return new BaseResponse<>(HttpStatus.OK, "Transfer completed", response);
     }
 
     private User retrieveUserDetails() {
