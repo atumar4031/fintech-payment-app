@@ -8,10 +8,12 @@ Technologies
 
 1. java (Spring Framework)
 2. Flutter web API
-3. PostgresQL
-4. JWT authentication (Security)
-5. JUnit and Mockito
-6. Swagger API documentaion
-7. Postman API Testing
+3. Docker
+4. Heroku
+5. PostgresQL
+6. JWT authentication (Security)
+7. JUnit and Mockito
+8. Swagger API documentaion
+9. Postman API Testing
 
 Status: completed.
