@@ -1,4 +1,4 @@
-# fintech-payment-app
+# fintech-Service-app
 
 A payment web app with wallet and transfer features. The app will allow for a simple onboarding process 
 including new user registration and existing user login. A wallet for saving funds and transferring funds 
